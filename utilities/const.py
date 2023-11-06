@@ -1,0 +1,6 @@
+WIDTH, HEIGHT = 500, 500
+TESTW, TESTH = 250, 250
+MODEL_PATH = r'dataset\model\base_model.joblib'
+LTHRESHOLD = 128
+DENOISE_KERNEL = (3, 3)
+DENOISE_SIGMA = 0

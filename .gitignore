@@ -1,0 +1,9 @@
+.venv/Lib/*
+.venv/share
+__pycache__
+dataset/*
+
+!dataset/images
+!dataset/captured
+
+pipe
