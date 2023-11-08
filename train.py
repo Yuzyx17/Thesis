@@ -70,4 +70,17 @@ for class_folder in os.listdir(dataset_dir):
 print("Training SVC")
 
 features = np.array(features)
-useACO(features, labels)
+param_grid = {
+    'C': [0.01, 0.1, 1, 10],
+    # 'kernel': ['linear', 'poly', 'rbf'],
+    'kernel' : ['rbf'],
+    # 'degree': [2, 3, 4],
+    'gamma': ['scale', 'auto'] + [0.01, 0.1, 1, 10],
+    'coef0': [0.0, 1.0, 2.0],
+    # 'shrinking': [True, False],
+    'class_weight': [None, 'balanced'],
+    'decision_function_shape': ['ovr', 'ovo'],
+}
+f = features
+l = labels
+saveSVC(usePSO(f, l))

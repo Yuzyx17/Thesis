@@ -8,7 +8,7 @@ def rename_files(folder_path):
     files.sort()
 
     # Set the starting number for renaming
-    start_number = 1
+    start_number = 28
 
     # Iterate through each file in the folder
     for file_name in files:
@@ -23,7 +23,7 @@ def rename_files(folder_path):
         start_number += 1
 
 # Specify the path to your folder
-folder_path = r"dataset\images\tungro"
+folder_path = r"dataset\images\blight"
 
 # Call the function to rename files in the folder
 rename_files(folder_path)

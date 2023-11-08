@@ -2,7 +2,8 @@ import numpy as np
 
 from classifier import *
 
-def ant_colony_optimization(feat, label, opts):
+def ant_colony_optimization(features, labels, opts):
+
     # Parameters
     tau = 1      # pheromone value
     eta = 1      # heuristic desirability
@@ -28,7 +29,7 @@ def ant_colony_optimization(feat, label, opts):
     # Objective function
     fun = fitness_function
     # Number of dimensions
-    dim = feat.shape[1]
+    dim = features.shape[1]
     # Initial Tau & Eta
     tau = tau * np.ones((dim, dim))
     eta = eta * np.ones((dim, dim))
@@ -72,7 +73,7 @@ def ant_colony_optimization(feat, label, opts):
         # Fitness
         for i in range(N):
             # Fitness
-            fit[i] = fun(feat, label, X_bin[i, :], opts)
+            fit[i] = fun(features, labels, X_bin[i, :], opts)
             # Global update
             if fit[i] < fitG:
                 Xgb = X[i, :]
@@ -115,6 +116,6 @@ def ant_colony_optimization(feat, label, opts):
     Sf = Xgb
     Sf = Sf[Sf != 0] - 1
     # Store results
-    ACO = {'sf': Sf, 'ff': feat[:, Sf], 'nf': len(Sf), 'c': curve, 'f': feat, 'l': label}
+    ACO = {'sf': Sf, 'ff': features[:, Sf], 'nf': len(Sf), 'c': curve, 'f': features, 'l': labels}
     return ACO
 

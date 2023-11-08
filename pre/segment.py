@@ -234,7 +234,7 @@ def extract_leaf(image):
 def segment_leaf(image):
     border_size = 10  # Adjust the border size as needed
     image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
-    image = cv2.resize(image, (HEIGHT, WIDTH))
+    # image = cv2.resize(image, (HEIGHT, WIDTH))
     # kernel = np.ones((5, 5), np.uint8)
     test = cv2.medianBlur(image, ksize=3)
 
@@ -242,33 +242,56 @@ def segment_leaf(image):
     hsv = cv2.cvtColor(test, cv2.COLOR_RGB2HSV)
     l, a, B = cv2.split(lab)
     h, s, v = cv2.split(hsv)
+    r, g, b = cv2.split(test)
 
+    l = cv2.equalizeHist(l)
     a = cv2.equalizeHist(a)
-    s = cv2.equalizeHist(s)
     v = cv2.equalizeHist(v)
+    g = cv2.equalizeHist(g)
     B = cv2.equalizeHist(B)
+    h = cv2.equalizeHist(h)
     
-    a = 255-a
+    # a = 255-a
     B = 255-B
 
-    # a = cv2.convertScaleAbs(a, alpha=1.25)
-    # s = cv2.convertScaleAbs(s, alpha=1.25)
-    # v = cv2.convertScaleAbs(v, alpha=1.25)
-    # B = cv2.convertScaleAbs(B, alpha=1.25)
+    l = cv2.convertScaleAbs(l, alpha=1.25)
+    a = cv2.convertScaleAbs(a, alpha=1.25)
+    v = cv2.convertScaleAbs(v, alpha=1.25)
+    B = cv2.convertScaleAbs(B, alpha=1.25)
+    g = cv2.convertScaleAbs(g, alpha=1.25)
+    h = cv2.convertScaleAbs(h, alpha=1.25)
 
+    _, l = cv2.threshold(l, 195, 255, cv2.THRESH_BINARY)
     _, a = cv2.threshold(a, 195, 255, cv2.THRESH_BINARY)
-    _, s = cv2.threshold(s, 195, 255, cv2.THRESH_BINARY)
     _, v = cv2.threshold(v, 195, 255, cv2.THRESH_BINARY)
     _, B = cv2.threshold(B, 195, 255, cv2.THRESH_BINARY)
+    _, g = cv2.threshold(g, 195, 255, cv2.THRESH_BINARY)
+    _, h = cv2.threshold(h, 195, 255, cv2.THRESH_BINARY)
+
+    # Define the shape of the kernel (e.g., a square)
+    kernel_shape = cv2.MORPH_RECT  # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
+
+    # Define the size of the kernel (width and height)
+    kernel_size = (5, 5)  # Adjust the size as needed
+
+    # Create the kernel
+    kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
     
+    leaf = cv2.bitwise_xor(v, s)
+    leaf = cv2.bitwise_xor(leaf, g)
+    leaf = cv2.dilate(leaf, kernel, iterations=2)
+
+    dise = cv2.bitwise_or(a, B)
+    dise = cv2.bitwise_or(dise, h)
+    leaf = cv2.bitwise_and(v, v)
+    mask = cv2.bitwise_or(dise, leaf)
+    # # mask = cv2.bitwise_and(mask, z)
     # mask = cv2.bitwise_or(a, s)
-    mask = cv2.bitwise_or(a, B)
-    # mask = cv2.bitwise_or(mask, B)
-    # mask = cv2.bitwise_or(mask, s)
+    # mask = cv2.bitwise_and(mask, v)
     mask = cv2.convertScaleAbs(mask, alpha=1.25)
 
     # Without Canny
-    _, mask = cv2.threshold(mask, 163, 255, cv2.THRESH_BINARY)
+    _, mask = cv2.threshold(mask, 196, 255, cv2.THRESH_BINARY)
     mask = cv2.bitwise_and(image, image, mask=mask)
 
     # With Canny
@@ -281,7 +304,8 @@ def segment_leaf(image):
     cv2.drawContours(tmask, [largest_contour], 0, 255, -1)
     tmask = cv2.bitwise_and(image, image, mask=tmask)
     tmask = cv2.resize(tmask, (TESTH, TESTW))
-    return tmask
+    mask = cv2.resize(mask, (TESTH, TESTW))
+    return mask
 
 def combine_leaf_and_disease(leaf, disease):
     # Create a mask for the disease region
