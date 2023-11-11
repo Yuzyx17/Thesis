@@ -292,7 +292,7 @@ def segment_leaf(image):
     # mask = cv2.bitwise_and(mask, v)
     # mask = cv2.convertScaleAbs(mask, alpha=1.25)
 
-    # Without Canny
+    # THresholding
     _, mask = cv2.threshold(mask, 196, 255, cv2.THRESH_BINARY)
     mask = cv2.bitwise_and(image, image, mask=mask)
 
@@ -305,8 +305,8 @@ def segment_leaf(image):
     largest_contour = max(contours, key=cv2.contourArea)
     cv2.drawContours(tmask, [largest_contour], 0, 255, -1)
     tmask = cv2.bitwise_and(image, image, mask=tmask)
-    tmask = cv2.resize(tmask, (TESTH, TESTW))
-    mask = cv2.resize(mask, (TESTH, TESTW))
+    tmask = cv2.resize(tmask, (FEAT_W, FEAT_H))
+    mask = cv2.resize(mask, (FEAT_W, FEAT_H))
     return mask
 
 def combine_leaf_and_disease(leaf, disease):

@@ -8,9 +8,6 @@ from pre.norm import *
 from pre.segment import *
 from utilities.util import displayImages, stopWait
 
-dataset_dir = r'dataset\captured'
-augmented_dir = r'dataset\augmented\captured'
-model_file_path = r'dataset\model'
 features= []
 labels= []
 

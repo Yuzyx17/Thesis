@@ -134,7 +134,7 @@ def stopWait():
 def saveSVC(model, name="base"):
     print("Model Saving")
     # Define the file path where you want to save the model
-    model_file_path = f"{MODEL_PATH}\{name}.joblib"
+    model_file_path = f"{MODEL_PATH}/{name}.joblib"
 
     # Save the trained MSVM model to the specified file
     joblib.dump(model, model_file_path)

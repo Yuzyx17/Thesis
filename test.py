@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 model_index = 0
 model_name = MODELS[model_index]
-model = joblib.load(f"{MODEL_PATH}\{model_name}.joblib")
+model = joblib.load(f"{MODEL_PATH}/{model_name}.joblib")
 test = r'dataset\images\bacterial'
 
 # Loop through the images in the class folder
@@ -28,11 +28,11 @@ for image_file in os.listdir(test):
     image = segment_leaf(image)
     X = [getFeatures(image)]
     
-    scaler = joblib.load(f"{SCALER_PATH}\{model_name}.pkl")
+    scaler = joblib.load(f"{SCALER_PATH}/{model_name}.pkl")
     X = scaler.transform(X)
 
     if model_name != "base":
-        selected_feature_indices = np.load(f"{FEATURE_PATH}\{model_name}.npy")
+        selected_feature_indices = np.load(f"{FEATURE_PATH}/{model_name}.npy")
         X = X[selected_feature_indices]
 
     predictions = model.predict(X)[0]
