@@ -236,7 +236,8 @@ def segment_leaf(image):
     image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
     # image = cv2.resize(image, (HEIGHT, WIDTH))
     # kernel = np.ones((5, 5), np.uint8)
-    test = cv2.medianBlur(image, ksize=3)
+    test = useWWhiteBalance(image)
+    test = cv2.medianBlur(test, ksize=3)
 
     lab = cv2.cvtColor(test, cv2.COLOR_RGB2LAB)
     hsv = cv2.cvtColor(test, cv2.COLOR_RGB2HSV)
@@ -283,12 +284,13 @@ def segment_leaf(image):
 
     dise = cv2.bitwise_or(a, B)
     dise = cv2.bitwise_or(dise, h)
-    leaf = cv2.bitwise_and(v, v)
-    mask = cv2.bitwise_or(dise, leaf)
+    leaf = cv2.bitwise_or(s, v)
+    mask = leaf
+    # mask = cv2.bitwise_or(dise, leaf)
     # # mask = cv2.bitwise_and(mask, z)
     # mask = cv2.bitwise_or(a, s)
     # mask = cv2.bitwise_and(mask, v)
-    mask = cv2.convertScaleAbs(mask, alpha=1.25)
+    # mask = cv2.convertScaleAbs(mask, alpha=1.25)
 
     # Without Canny
     _, mask = cv2.threshold(mask, 196, 255, cv2.THRESH_BINARY)

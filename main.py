@@ -15,9 +15,8 @@ features= []
 labels= []
 
 test = 0
-disease = 2
-index = 7
-disease = 'blb' if disease==1 else ('hlt' if disease==2 else ('rbl' if disease==3 else 'sbt'))
+disease = 4
+index = 30
 
 if test:
     displayImages(
@@ -27,8 +26,14 @@ if test:
         sb=segment_leaf(cv2.imread(f'dataset/captured/sbt/{index}.jpg')),
     )
 else:
-    img = cv2.imread(f'dataset/captured/{disease}/{index}.jpg')
-    displayChannels(img, alpha=1.25, lower=200, mask=True)
+    path = f'dataset/captured/{CLASSES[disease]}/{index}.jpg'
+    path = r'dataset\images\blast\31.jpg'
+    img = cv2.imread(path)
+    
+    # displayChannels(img, alpha=1.25, lower=200, mask=True)
+    displayImages(
+        main= segment_leaf(img)
+    )
 
 stopWait()
 

@@ -71,7 +71,7 @@ def getHSVFeatures(image):
 
 def getLABFeatures(image):
     # Convert the image to HSV
-    lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
 
     # Extract features from HSV
     l_mean = np.mean(lab_image[:,:,0])
@@ -144,7 +144,7 @@ def getColHistFeatures(image, num_bins=256, channels=(0, 1, 2), ranges=(0, 256))
 
 def getFeatures(image):
     return np.hstack((
-                    # getHOGFeatures(image),
+                    getHOGFeatures(image),
                     getGLCMFeatures(image),
                     getHistFeatures(image),
                     getLBPFeatures(image),

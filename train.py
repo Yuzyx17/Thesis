@@ -10,6 +10,7 @@ from pre.norm import *
 from pre.segment import *
 from utilities.features import *
 from lib.classifier import *
+from tqdm import tqdm
 
 dataset_dir = r'dataset\captured'
 augmented_dir = r'dataset\augmented'
@@ -49,7 +50,7 @@ for class_folder in os.listdir(dataset_dir):
         continue
 
     # Loop through the images in the class folder
-    for image_file in os.listdir(class_path):
+    for image_file in tqdm(os.listdir(class_path)):
         image_path = os.path.join(class_path, image_file)
         image = cv2.imread(image_path) 
         image = segment_leaf(image)
@@ -72,15 +73,17 @@ print("Training SVC")
 features = np.array(features)
 param_grid = {
     'C': [0.01, 0.1, 1, 10],
-    # 'kernel': ['linear', 'poly', 'rbf'],
-    'kernel' : ['rbf'],
-    # 'degree': [2, 3, 4],
-    'gamma': ['scale', 'auto'] + [0.01, 0.1, 1, 10],
+    'kernel': ['linear', 'poly', 'rbf'],
+    'degree': [2, 3, 4],
+    'gamma': ['scale', 'auto'] + [0.1, 1, 10],
     'coef0': [0.0, 1.0, 2.0],
-    # 'shrinking': [True, False],
     'class_weight': [None, 'balanced'],
     'decision_function_shape': ['ovr', 'ovo'],
+    'shrinking': [True, False],
+    'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
+    'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
 f = features
 l = labels
-saveSVC(usePSO(f, l))
+saveSVC(usePSO(f, l), name="pso")
+print("Training Completed")
