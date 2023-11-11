@@ -8,3 +8,5 @@ dataset/*
 !dataset/segmented
 
 pipe
+apt.py
+otest.py
