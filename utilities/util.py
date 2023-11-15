@@ -1,3 +1,4 @@
+import sys
 import cv2
 import numpy as np
 import joblib
@@ -127,6 +128,15 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
         u=leaf,
     )
 
+
+def progressBar(count_value, total, suffix=''):
+    bar_length = 100
+    filled_up_Length = int(round(bar_length* count_value / float(total)))
+    percentage = round(100.0 * count_value/float(total),1)
+    bar = '=' * filled_up_Length + '-' * (bar_length - filled_up_Length)
+    sys.stdout.write('[%s] %s%s ...%s\r' %(bar, percentage, '%', suffix))
+    sys.stdout.flush()
+    
 def stopWait():
     cv2.waitKey()
     cv2.destroyAllWindows()

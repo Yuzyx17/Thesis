@@ -145,13 +145,13 @@ def getColHistFeatures(image, num_bins=256, channels=(0, 1, 2), ranges=(0, 256))
 def getFeatures(image):
     return np.hstack((
                     getHOGFeatures(image),
+
                     getGLCMFeatures(image),
-                    getHistFeatures(image),
                     getLBPFeatures(image),
+
                     getHSVFeatures(image),
                     getLABFeatures(image),
-                    getColorFeatures(image),
+                    # getColorFeatures(image),
                     getColHistFeatures(image),
-                    # getShapeFeatures(image),
                     getCoCoFeatures(image)
                     ))
