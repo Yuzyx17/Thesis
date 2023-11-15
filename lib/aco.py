@@ -96,11 +96,6 @@ class AntColonyOptimization:
         solution = np.array(path)
         fitness = self.fitness(features, labels, solution)
 
-        if self.debug:
-            self.progress += 1
-            sys.stdout.write("Explored Ants: %d  \r" % (self.progress) )
-            sys.stdout.flush()
-
         return solution, fitness
 
     # Apply ACO as feature selector
