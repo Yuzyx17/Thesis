@@ -1,8 +1,8 @@
 import os
-import sys
 import joblib
 import numpy as np
 import numpy.typing as npt
+
 from typing import List
 from joblib import Parallel, delayed
 from sklearn.calibration import LabelEncoder
@@ -10,7 +10,6 @@ from sklearn.discriminant_analysis import StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-from sklearn.svm import SVC
 from utilities.const import *
 np.set_printoptions(threshold=10)
 
@@ -50,7 +49,8 @@ class WrapperAntColonyOptimization:
 
         if self.debug:
             print(f"Settings:\nalpha={self.alpha}\nbeta={self.beta}\nrho={self.rho}\nQ={self.Q}\nants={self.ants} iterations={self.iterations} folds={self.folds}")
-            print(f"Parralelization={self.parallelization} cores={self.cores}")
+            if self.parallelization:
+                print(f"Parralelization={self.parallelization} cores={self.cores}")
 
     # Calculate transition probability and select a node based on the probability
     def transition(self, current: int, visited_nodes: List, tau: npt.NDArray, eta: npt.NDArray) -> int:
@@ -65,7 +65,7 @@ class WrapperAntColonyOptimization:
     # Update delta tau for each path
     def delta_tau(self, solution: List, quality: float, delta_tau: npt.NDArray):
         for node in range(len(solution)-1):
-            # Update edge(i, j) delta tau based on quality of solution
+            # Update edge(i, j) delta tau based on quality of solution for this path
             delta_tau[solution[node]][solution[node+1]] = self.Q / (1 - quality + 1) 
         return delta_tau
     
@@ -121,7 +121,7 @@ class WrapperAntColonyOptimization:
 
         for iteration in range(self.iterations):
             if self.debug:
-                print(f"Iteration {iteration+1}")
+                print(f"Iteration {iteration+1}", end=" ")
 
             subset_amount = np.random.randint(2, nodes) # Initialize a random number of features
             local_solutions = [] # Store local solutions
@@ -148,7 +148,7 @@ class WrapperAntColonyOptimization:
         return global_solution, global_accuracy
 
 
-def UseWrapperACO(features, labels, ants=30, iterations=100, parallel=False, debug=1, fold=1):
+def WrapperACO(features, labels, ants=30, iterations=100, parallel=False, debug=1, fold=1):
     label_encoder = LabelEncoder()
     numerical_labels = label_encoder.fit_transform(labels)
     
@@ -165,7 +165,7 @@ def UseWrapperACO(features, labels, ants=30, iterations=100, parallel=False, deb
     aco = WrapperAntColonyOptimization(MODEL, ants=ants, iterations=iterations, debug=debug, folds=fold, parrallelization=parallel)
     selected_features, feature_fitness = aco.optimize(X, numerical_labels)
     print("Optimization with Ant Colony Complete")
-    print(f"Solution: {selected_features} with {feature_fitness}% accuracy")
+    print(f"Solution: {np.sort(selected_features)} with {feature_fitness:.2f}% accuracy")
 
     np.save(f"{FEATURE_PATH}/AntColony.npy", selected_features)
 
@@ -185,4 +185,4 @@ def UseWrapperACO(features, labels, ants=30, iterations=100, parallel=False, deb
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
     print(f"Features: {X.shape[1]} & {X[:, selected_features].shape[1]}")
 
-    return svm
+    return svm, overall_accuracy

@@ -15,7 +15,7 @@ SEG_PATH = r'dataset\model'
 
 MODEL = SVC(C=10, kernel='rbf', probability=True)
 
-MODELS = ["base", "pso", "aco", "AntColony", "test-pso"]
+MODELS = ["BaseModel", "AntColony", "ParticleSwarm"]
 CLASSES = ["blb", "hlt", "rbl", "sbt"]
 
 PARAM_GRID = {

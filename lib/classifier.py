@@ -12,64 +12,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from tqdm import tqdm
 import numpy as np
-from lib.ant import ACOFeatureSelection
 
 from utilities.const import *
 
-def fitness_function(feat, label, selected_features):
-    # Convert class labels to numerical labels
-    unique_labels = np.unique(label)
-    label_to_id = {label: i for i, label in enumerate(unique_labels)}
-    numerical_labels = np.array([label_to_id[label] for label in label])
-    # Get the selected features
-    selected_feat = feat[:, selected_features]
-
-    # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(selected_feat, numerical_labels, test_size=0.2, random_state=42)
-
-    # Create and train the MSVM classifier
-    clf = SVC()
-    clf.fit(X_train, y_train)
-
-    # Make predictions on the test set
-    y_pred = clf.predict(X_test)
-
-    # Calculate accuracy (you can use other metrics as needed)
-    accuracy = accuracy_score(y_test, y_pred)
-
-    return accuracy
-
-def fitness_function_cv(feat, label, selected_features,  opts, cv=2,):
-    # Convert class labels to numerical labels
-    unique_labels = np.unique(label)
-    label_to_id = {label: i for i, label in enumerate(unique_labels)}
-    numerical_labels = np.array([label_to_id[label] for label in label])
-
-    # Create a SimpleImputer to handle missing values (replace 'mean' with your preferred strategy)
-    imputer = SimpleImputer(strategy='mean')
-
-    # Apply imputation to your feature data
-    selected_feat = feat[:, selected_features]
-    X_imputed = imputer.fit_transform(selected_feat)
-
-    svm = MODEL
-
-    # Perform cross-validation and obtain scores
-    cv_scores = cross_val_score(svm, X_imputed, numerical_labels, cv=cv)
-
-    return cv_scores.mean()
-
-def random_selection(prob):
-    # Cumulative summation
-    C = np.cumsum(prob)
-    # Random one value, most probability value [0~1]
-    P = np.random.rand()
-    # Roulette wheel
-    for i in range(len(C)):
-        if C[i] > P:
-            return i + 1
-
-def useBase(features, labels):
+def BaseModel(features, labels):
     # Convert class labels to numerical labels
     unique_labels = np.unique(labels)
     label_to_id = {label: i for i, label in enumerate(unique_labels)}
@@ -85,7 +31,7 @@ def useBase(features, labels):
 
     # Fit on the imputed data
     scaler.fit(X)
-    joblib.dump(scaler, f"{SCALER_PATH}/base.pkl")
+    joblib.dump(scaler, f"{SCALER_PATH}/BaseModel.pkl")
     # Transform the imputed data
     X = scaler.transform(X)
 
@@ -118,7 +64,7 @@ def useBase(features, labels):
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
     print(f"Features: {X.shape[0]}")
     
-    return svm
+    return svm, overall_accuracy
 
 def useBaseCV(features, labels, cv=5):
     # Convert class labels to numerical labels
@@ -248,21 +194,6 @@ def usePSO(features, labels, swarm=30, iterations=100):
     return svm
 
 def useACO(features, labels, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0.2, Q=1.0, delta=0.1):
-    # Convert class labels to numerical labels
-    label_encoder = LabelEncoder()
-    numerical_labels = label_encoder.fit_transform(labels)
-    # Create a SimpleImputer to handle missing values (replace 'mean' with your preferred strategy)
-    imputer = SimpleImputer(strategy='mean')
-    # Apply imputation to your feature data
-    X = imputer.fit_transform(features)
-    # Initialize the scaler
-    scaler = StandardScaler()
-
-    # Fit on the imputed data
-    scaler.fit(X)
-    joblib.dump(scaler, f"{SCALER_PATH}/aco.pkl")
-    # Transform the imputed data
-    X = scaler.transform(X)
     
     # def calculate_transition_probabilities(tau, eta, alpha, beta, visited_features):
     #     probabilities = (tau ** alpha) * (eta ** beta)
@@ -334,42 +265,7 @@ def useACO(features, labels, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0
     #         deposit_pheromone(tau, global_best_solution, delta, Q)
 
     #     return global_best_solution
-    print("ACO Starting")
-    aco = ACOFeatureSelection(n_ants=ants, max_iterations=iterations, alpha=alpha, beta=beta, rho=rho, Q=Q, delta=delta)
-    selected_features = aco.fit_transform(X, labels)
-    print("Optimization with ACO Complete")
-    # Save the indices of the selected features
-    np.save(f"{FEATURE_PATH}/aco.npy", selected_features)
-    # Split the data into training and testing sets using the selected features
-    X_train, X_test, Y_train, Y_test = train_test_split(X[:, selected_features], numerical_labels, test_size=0.2, random_state=42)
-
-    # Create an SVM classifier
-    svm = MODEL
-
-    # Train the model on the training data
-    svm.fit(X_train, Y_train)
-
-    # Make predictions on the test set
-    Y_pred = svm.predict(X_test)
-
-    # Convert numerical labels back to original class labels
-    predicted_class_labels = label_encoder.inverse_transform(Y_pred)
-
-    # Generate a classification report
-    report = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, zero_division='warn')
-
-    # Calculate the overall accuracy
-    overall_accuracy = accuracy_score(Y_test, Y_pred)
-
-    # Print the classification report with class-wise accuracy
-    print("ACO Classification Report:")
-    print(report)
-
-    # Print overall accuracy
-    print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
-    print(f"Features: {features.shape[0]} & {features[:, selected_features].shape[0]}")
-
-    return svm
+    ...
 
 def useGridSVC(features, labels, param_grid, cv=2):
     # Convert class labels to numerical labels

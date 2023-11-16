@@ -16,10 +16,10 @@ from utilities.const import *
 from tqdm import tqdm
 
 
-model_index = 3
+model_index = 0
 model_name = MODELS[model_index]
 model = joblib.load(f"{MODEL_PATH}/{model_name}.joblib")
-class_index = 3
+class_index = 0
 test = f'dataset/images/{CLASSES[class_index]}'
 predictions = {
     'blb' : 0,

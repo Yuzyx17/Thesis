@@ -68,7 +68,7 @@ def custom_pso(X, y, num_particles, num_iterations, c1, c2, w, threshold):
     return global_best_position
 
 
-def TestPSO(features, labels, swarm=30, iterations=100):
+def WrapperPSO(features, labels, swarm=30, iterations=100):
     label_encoder = LabelEncoder()
     numerical_labels = label_encoder.fit_transform(labels)
     
@@ -77,16 +77,16 @@ def TestPSO(features, labels, swarm=30, iterations=100):
 
     scaler = StandardScaler()
     scaler.fit(X)
-    joblib.dump(scaler, f"{SCALER_PATH}/test-pso.pkl")
+    joblib.dump(scaler, f"{SCALER_PATH}/ParticleSwarm.pkl")
 
     X = scaler.transform(X)
 
-    print("Starting PSO")
+    print("Starting Partcile Swarm Optimization")
     selected_features = custom_pso(features, labels, num_particles=swarm, num_iterations=iterations, c1=1.49618, c2=1.49618, w=0.7298, threshold=0.6)
     selected_features = np.where(selected_features > 0.5)[0]
     print("Optimization with PSO Complete")
 
-    np.save(f"{FEATURE_PATH}/test-pso.npy", selected_features)
+    np.save(f"{FEATURE_PATH}/ParticleSwarm.npy", selected_features)
 
     X_train, X_test, Y_train, Y_test = train_test_split(X[:, selected_features], numerical_labels, test_size=0.2, random_state=42)
 
@@ -104,5 +104,5 @@ def TestPSO(features, labels, swarm=30, iterations=100):
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
     print(f"Features: {X.shape[1]} & {X[:, selected_features].shape[1]}")
 
-    return svm
+    return svm, overall_accuracy
 # custom_pso(X, y, num_particles=30, num_iterations=100, c1=1.49618, c2=1.49618, w=0.7298, threshold=0.6)

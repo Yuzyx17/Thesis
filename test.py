@@ -6,8 +6,8 @@ import numpy.typing as npt
 from typing import List
 
 
-n = 100
-ants = 1
+n = 10
+ants = 5
 iterations = 5
 tau = np.random.uniform(0.01, 0.1, size=(n, n))   # Create a Pheromone Matrix representing Edges
 eta = np.random.rand(n, n)   # Create a Heuristic Matrix representing value of Edges
@@ -29,7 +29,7 @@ def transition(current: int, visited: List, tau: npt.NDArray, eta: npt.NDArray) 
        M[current] = 0 # Current Node is set to 0 Probability
        P = N / M.sum()
        node = np.random.choice(len(P), p=P)
-       print(np.round(P,2).reshape(10, 10))
+       print(f"\t", current, np.round(P,2))
        return node
 
 def fitness_function(nodes, nodess, nodesss):
@@ -57,6 +57,7 @@ def tour(ant, tau, eta, features, labels, subset_amount=0):
        
        solution = np.array(path)
        fitness = fitness_function(features, labels, solution)
+       print(f"\t\t", ant+1, solution, fitness)
 
        return solution, fitness
 
