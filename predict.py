@@ -16,7 +16,7 @@ from utilities.const import *
 from tqdm import tqdm
 
 
-model_index = 4
+model_index = 3
 model_name = MODELS[model_index]
 model = joblib.load(f"{MODEL_PATH}/{model_name}.joblib")
 class_index = 3
