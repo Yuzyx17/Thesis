@@ -303,7 +303,7 @@ def createModel(features, labels, selectedFeatures=None):
     print("Wrapper ACO Model Classification Report:")
     print(report)
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
-    print(f"Features: {features.shape[1]} & {features[:,selectedFeatures].shape[1]}")
+    print(f"Features: {features.shape[1]} & {features[:,selectedFeatures].shape[1] if selectedFeatures is not None else ''}")
 
     return svm, overall_accuracy
 
