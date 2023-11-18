@@ -19,9 +19,6 @@ print("Features Loaded")
 start = time.time()
 
 print(f"Starting Training with Feature: {X.shape}")
-save = 1
-model_index = 1
-accuracy = 0
 
 # Pre process features
 scaler.fit(X)
@@ -30,12 +27,16 @@ Y = label_encoder.fit_transform(Y)
 
 # Create fitness function
 fitness_function = lambda subset: fitness(X, Y, subset)
+subset = None
 
+save = 0
+model_index = 1
+accuracy = 0
 match model_index:
     case 0: 
-        model, accuracy, subset = BaseModel(X, Y)
+        model, accuracy = createModel(X, Y)
     case 1: 
-        aco = WrapperACO(fitness_function, X.shape[1], ants=5, iterations=10, debug=1)
+        aco = WrapperACO(fitness_function, X.shape[1], ants=2, iterations=5, debug=1)
         model, accuracy, subset = useWrapperACO(X, Y, aco)
 if save:
     saveModel(model, model_index, subset)
