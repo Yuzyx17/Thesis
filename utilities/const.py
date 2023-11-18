@@ -10,6 +10,7 @@ sys.path.append(r'pre')
 import os
 import cv2
 import numpy as np
+from enum import Enum
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 from sklearn.svm import SVC
@@ -32,10 +33,19 @@ SEG_PATH = r'dataset\model'
 """
 GENERAL CONSTANTS
 """
+class Model(Enum):
+    BaseModel       = 0
+    ParticleSwarm   = 1
+    AntColony       = 2
+    ArtificialBee   = 3
 
-MODEL = SVC(C=10, kernel='rbf', probability=True)
-MODELS = ["BaseModel", "AntColony", "ParticleSwarm"]
-CLASSES = ["blb", "hlt", "rbl", "sbt"]
+class Disease(Enum):
+    blb     =   0
+    hlt     =   1
+    rbl     =   2
+    sbt     =   3
+
+CLASSIFIER = SVC(C=10, kernel='rbf', probability=True)
 CORES = os.cpu_count() // 2
 CORES = CORES if CORES // 2 >= os.cpu_count() else CORES + 1
 PARAM_GRID = {
@@ -49,11 +59,11 @@ PARAM_GRID = {
     'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
     # 'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
-FOLDS = 1
-SHUFFLE = True
+FOLDS = 1 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
+SHUFFLE = False # False to ensure replicability over all models
 
-R_STATE = 42
-TEST_SIZE = 0.2
+R_STATE = 42 # Select Random State to ensure replicablity
+TEST_SIZE = 0.2 #  Percentage of test size
 """
 OBJECTIVE FUNCTION
 """
@@ -62,12 +72,12 @@ def fitness(features, labels, subset):
 
     if FOLDS > 1:
         kfold = KFold(n_splits=FOLDS, shuffle=SHUFFLE, random_state=R_STATE)
-        scores = cross_val_score(MODEL, selected_features, labels, cv=kfold)
+        scores = cross_val_score(CLASSIFIER, selected_features, labels, cv=kfold)
         accuracy = scores.mean()
     else:
         X_train, X_test, y_train, y_test = train_test_split(selected_features, labels, test_size=TEST_SIZE, random_state=R_STATE)
-        MODEL.fit(X_train, y_train)
-        y_pred = MODEL.predict(X_test)
+        CLASSIFIER.fit(X_train, y_train)
+        y_pred = CLASSIFIER.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
 
     return accuracy
@@ -75,7 +85,7 @@ def fitness(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W, FEAT_H = 50, 50
+FEAT_W, FEAT_H = 100, 100
 
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
@@ -116,11 +126,11 @@ CHANNELS = (0, 1, 2)
 RANGES = (0, 256)
 
 FEATURES = [
-    ('H_FLIP', lambda image: getHOGFeatures(image, ORIENT, PPC, CPB)),
-    ('V_FLIP', lambda image: getGLCMFeatures(image)),
-    ('ROT90C', lambda image: getLBPFeatures(image)),
-    ('ROT180', lambda image: getHSVFeatures(image)),
-    ('ROT90O', lambda image: getLABFeatures(image)),
-    ('CONINC', lambda image: getColHistFeatures(image, BINS, CHANNELS, RANGES)),
-    ('CONDEC', lambda image: getCoCoFeatures(image))
+    ('HOG', lambda image: getHOGFeatures(image, ORIENT, PPC, CPB)),
+    ('GLCM', lambda image: getGLCMFeatures(image)),
+    ('LBP', lambda image: getLBPFeatures(image)),
+    ('HSV', lambda image: getHSVFeatures(image)),
+    ('LAB', lambda image: getLABFeatures(image)),
+    ('COLHIST', lambda image: getColHistFeatures(image, BINS, CHANNELS, RANGES)),
+    ('COCO', lambda image: getCoCoFeatures(image))
 ]

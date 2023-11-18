@@ -48,7 +48,7 @@ def custom_pso(X, y, num_particles, num_iterations, c1, c2, w, threshold):
                 score = 1.0  # Avoid division by zero
             else:
                 X_selected = X[:, selected_features]
-                kfold = KFold(n_splits=FOLD, shuffle=True, random_state=42)
+                kfold = KFold(n_splits=FOLDS, shuffle=True, random_state=42)
                 classifier = SVC(kernel='rbf', C=10, probability=True)
                 y_pred = cross_val_predict(classifier, X_selected, y, cv=kfold)
                 accuracy = accuracy_score(y, y_pred)

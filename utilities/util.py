@@ -6,9 +6,9 @@ import joblib
 from utilities.const import *
 
 def displayImages(size=175, **imgs):
-    for name, img in imgs.items():
+    for model, img in imgs.items():
         img = cv2.resize(img, (size, size))
-        cv2.imshow(name, img)
+        cv2.imshow(model, img)
 
 def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mask=False):
     rgb = cv2.medianBlur(image, ksize=3)
@@ -105,12 +105,12 @@ def stopWait():
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-def saveModel(model, name, subset=None):
+def saveModel(classifier, model, subset=None):
     print("Model Saving")
-    joblib.dump(model, f"{MODEL_PATH}/{MODELS[name]}.joblib")
-    joblib.dump(scaler, f"{SCALER_PATH}/{MODELS[name]}.pkl")
+    joblib.dump(classifier, f"{MODEL_PATH}/{model.name}.joblib")
+    joblib.dump(scaler, f"{SCALER_PATH}/{model.name}.pkl")
     if subset is not None:
-        np.save(f"{FEATURE_PATH}/{MODELS[name]}.npy", subset)
+        np.save(f"{FEATURE_PATH}/{model.name}.npy", subset)
     print("Model Saved")
 
 def getFeatures(image):

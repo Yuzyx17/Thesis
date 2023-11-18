@@ -21,7 +21,7 @@ def BaseModel(features, labels):
     X_train, X_test, Y_train, Y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
 
     # Create an MSVM model with an RBF kernel
-    svm = MODEL
+    svm = CLASSIFIER
 
     # Train the model on the training data
     svm.fit(X_train, Y_train)
@@ -62,7 +62,7 @@ def useBaseCV(features, labels, cv=5):
     X_train, X_test, Y_train, Y_test = train_test_split(X_imputed, numerical_labels, test_size=0.2, random_state=42)
 
     # Create an MSVM model with an RBF kernel
-    svm = MODEL
+    svm = CLASSIFIER
 
     # Perform cross-validation and obtain scores
     cv_scores = cross_val_score(svm, X_imputed, numerical_labels, cv=cv)
@@ -146,7 +146,7 @@ def usePSO(features, labels, swarm=30, iterations=100):
     X_train, X_test, Y_train, Y_test = train_test_split(X[:, selected_features], numerical_labels, test_size=0.2, random_state=42)
 
     # Create an SVM classifier
-    svm = MODEL
+    svm = CLASSIFIER
 
     # Train the model on the training data
     svm.fit(X_train, Y_train)
@@ -172,80 +172,6 @@ def usePSO(features, labels, swarm=30, iterations=100):
     print(f"Features: {X.shape[0]} & {X[:, selected_features].shape[0]}")
 
     return svm
-
-def useACO(features, labels, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0.2, Q=1.0, delta=0.1):
-    
-    # def calculate_transition_probabilities(tau, eta, alpha, beta, visited_features):
-    #     probabilities = (tau ** alpha) * (eta ** beta)
-    #     probabilities[list(visited_features)] = 0  # Set probabilities of visited features to 0
-    #     probabilities /= probabilities.sum()
-    #     return probabilities
-
-    # def select_next_feature(probabilities):
-    #     return np.random.choice(len(probabilities), p=probabilities)
-
-    # def evaluate_solution(features, labels, selected_features):
-    #     selected_feat = features[:, selected_features]
-    #     X_train, X_test, y_train, y_test = train_test_split(selected_feat, labels, test_size=0.2, random_state=42)
-        
-    #     clf = SVC(C=10, kernel='rbf', probability=True)
-    #     clf.fit(X_train, y_train)
-    #     y_pred = clf.predict(X_test)
-    #     accuracy = accuracy_score(y_test, y_pred)
-        
-    #     return accuracy
-
-    # def evaporate_pheromone(tau, rho):
-    #     return (1 - rho) * tau
-
-    # def deposit_pheromone(tau, solution, delta, Q):
-    #     for feature in solution:
-    #         tau[feature] += delta * Q
-
-    # def abacoh_feature_selection(features, labels, m, Imax, alpha, beta, rho, Q, delta):
-    #     n_ants = m
-    #     n_features = features.shape[1]
-
-    #     tau_min, tau_max = 0.01, 0.1
-    #     tau = np.random.uniform(tau_min, tau_max, size=(n_features,))
-
-    #     # Initialize heuristic information matrix eta based on F-score (not provided)
-    #     eta = np.random.rand(n_features)
-
-    #     global_best_solution = []
-    #     global_best_accuracy = 0.0
-
-    #     for iteration in range(Imax):
-    #         local_best_solutions = []
-
-            
-    #         for ant in tqdm(range(n_ants)):
-    #             visited_features = set()
-    #             ant_solution = []
-
-    #             while len(visited_features) < n_features:
-    #                 probabilities = calculate_transition_probabilities(tau, eta, alpha, beta, visited_features)
-    #                 next_feature = select_next_feature(probabilities)
-
-    #                 visited_features.add(next_feature)
-    #                 ant_solution.append(next_feature)
-
-    #             accuracy = evaluate_solution(features, labels, ant_solution)
-    #             local_best_solutions.append((ant_solution, accuracy))
-
-    #         local_best_solutions.sort(key=lambda x: x[1], reverse=True)
-
-    #         if local_best_solutions[0][1] > global_best_accuracy:
-    #             global_best_solution = local_best_solutions[0][0]
-    #             global_best_accuracy = local_best_solutions[0][1]
-    #             print(f"New Best Solution at Iteration {iteration+1}: {X[:, global_best_solution]}")
-    #         else:
-    #             print(f"Best Solution at Iteration {iteration+1}: {X[:, global_best_solution]}")
-    #         tau = evaporate_pheromone(tau, rho)
-    #         deposit_pheromone(tau, global_best_solution, delta, Q)
-
-    #     return global_best_solution
-    ...
 
 def useGridSVC(features, labels, param_grid, cv=2):
     # Convert class labels to numerical labels
@@ -293,14 +219,14 @@ def createModel(features, labels, selectedFeatures=None):
     features = features[:, selectedFeatures] if selectedFeatures is not None else features
     X_train, X_test, Y_train, Y_test = train_test_split(features, labels, test_size=TEST_SIZE, random_state=R_STATE)
 
-    svm = MODEL
+    svm = CLASSIFIER
     svm.fit(X_train, Y_train)
 
     Y_pred = svm.predict(X_test)
     report = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, zero_division='warn')
     overall_accuracy = accuracy_score(Y_test, Y_pred)
 
-    print("Wrapper ACO Model Classification Report:")
+    print("Classification Report:")
     print(report)
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
     print(f"Features: {features.shape[1]}")
@@ -312,6 +238,6 @@ def useWrapperACO(features, labels, aco):
     solution, quality = aco.optimize()
     print("Optimization with Ant Colony Complete")
     print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
-
+    print(f"Ant Colony ", end=" ")
     model, accuracy = createModel(features, labels, solution)
     return model, accuracy, solution

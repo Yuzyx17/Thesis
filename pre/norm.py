@@ -4,7 +4,7 @@ from utilities.util import *
 from skimage import exposure
 
 def useNormBright(img):
-    gray = rgbAsGray(img)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     mean = gray.mean()
     scaling_factor = LTHRESHOLD / mean
     normalized_image = cv2.convertScaleAbs(img, alpha=scaling_factor, beta=0)
@@ -17,7 +17,7 @@ def useBDenoise(img):
     return cv2.bilateralFilter(img, d=9, sigmaColor=75, sigmaSpace=75)
 
 def useSaturation(img):
-    image = rgbAsHsv(img)
+    image =  cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     image[:, :, 1] = image[:, :, 1] * 1.5 #Add to Constant
     
     return image
@@ -31,8 +31,7 @@ def useFSharpening(img):
     kernel = np.array([[-1,-1,-1],[-1,10,-1],[-1,-1,-1]])  # Sharpening kernel
     return cv2.filter2D(img, -1, kernel)
 
-
-def useWWhiteBalance(img):
+def useWhiteBalance(img):
     # Convert the image to float32
     image_float = img.astype(float)
 
@@ -54,7 +53,7 @@ def useScaleAbs(img, alpha=1.0, beta=0.0):
 
 def useContrast(img):
     # Convert the image to grayscale
-    gray_image = rgbAsGray(img)
+    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Scale the pixel values for contrast enhancement
     alpha = 1.5  # Contrast control (1.0 means no change)

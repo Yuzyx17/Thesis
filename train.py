@@ -29,17 +29,17 @@ Y = label_encoder.fit_transform(Y)
 fitness_function = lambda subset: fitness(X, Y, subset)
 subset = None
 
-save = 0
-model_index = 1
-accuracy = 0
-match model_index:
-    case 0: 
-        model, accuracy = createModel(X, Y)
-    case 1: 
+save = True
+model = Model.BaseModel
+accuracy = 0.0
+match model:
+    case Model.BaseModel: 
+        classifier, accuracy = createModel(X, Y)
+    case Model.AntColony: 
         aco = WrapperACO(fitness_function, X.shape[1], ants=2, iterations=5, debug=1)
-        model, accuracy, subset = useWrapperACO(X, Y, aco)
+        classifier, accuracy, subset = useWrapperACO(X, Y, aco)
 if save:
-    saveModel(model, model_index, subset)
+    saveModel(classifier, model, subset)
 
 end = time.time()
 hours, remainder = divmod(int(end-start), 3600)
@@ -48,7 +48,7 @@ elapsed = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 print(f"Training Completed\nElapsed Time: {elapsed}<00:00:00")
 
-log ={"Model": {"Name": MODELS[model_index], "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), "Elapsed": elapsed, "Accuracy": f"{accuracy:.2f}", "Saved": "True" if save else "False"}}
+log ={"Model": {"Name": model.name, "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), "Elapsed": elapsed, "Accuracy": f"{accuracy:.2f}", "Saved": "True" if save else "False"}}
 
 with open('logs.json', 'a') as logs:
     logs.write(json.dumps(log))

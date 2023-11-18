@@ -20,3 +20,6 @@
 {"Model": {"Name": "AntColony", "Date": "2023/11/18 17:24:18", "Elapsed": "00:07:36", "Accuracy": "0.92", "Saved": "True"}}
 {"Model": {"Name": "BaseModel", "Date": "2023/11/18 17:35:44", "Elapsed": "00:00:16", "Accuracy": "0.91", "Saved": "False"}}
 {"Model": {"Name": "BaseModel", "Date": "2023/11/18 17:37:21", "Elapsed": "00:00:17", "Accuracy": "0.91", "Saved": "False"}}
+{"Model": {"Name": "AntColony", "Date": "2023/11/18 17:57:46", "Elapsed": "00:01:30", "Accuracy": "0.92", "Saved": "False"}}
+{"Model": {"Name": "BaseModel", "Date": "2023/11/18 22:53:41", "Elapsed": "00:00:18", "Accuracy": "0.91", "Saved": "False"}}
+{"Model": {"Name": "BaseModel", "Date": "2023/11/18 22:54:15", "Elapsed": "00:00:19", "Accuracy": "0.91", "Saved": "True"}}

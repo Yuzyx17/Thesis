@@ -101,7 +101,7 @@ X = scaler.transform(X)
 X_train, X_test, Y_train, Y_test = train_test_split(X, numerical_labels, test_size=0.2, random_state=42)
 
 # Create an MSVM model with an RBF kernel
-svm = MODEL
+svm = CLASSIFIER
 
 # Train the model on the training data
 svm.fit(X_train, Y_train)
