@@ -5,8 +5,10 @@ import numpy.typing as npt
 
 from typing import List
 
+from lib.WrapperACO import WrapperACO
 
-n = 10
+
+n = 5
 ants = 5
 iterations = 5
 tau = np.random.uniform(0.01, 0.1, size=(n, n))   # Create a Pheromone Matrix representing Edges
@@ -32,7 +34,7 @@ def transition(current: int, visited: List, tau: npt.NDArray, eta: npt.NDArray) 
        print(f"\t", current, np.round(P,2))
        return node
 
-def fitness_function(nodes, nodess, nodesss):
+def fitness_function(nodes):
        return np.random.rand()
 
 def update_delta_tau(solution: List, quality: float, delta_tau: npt.NDArray):
@@ -92,4 +94,5 @@ def explore(features, labels):
               
        return global_solution, global_accuracy
 
-explore(features, labels)
+aco = WrapperACO(fitness_function, features.shape[1], ants=ants, iterations=iterations, debug=1)
+aco.optimize()

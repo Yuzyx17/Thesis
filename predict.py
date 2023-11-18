@@ -1,26 +1,25 @@
 import sys
 
 from sklearn.impute import SimpleImputer
-
-sys.path.append(r'lib')
-sys.path.append(r'utilities')
-sys.path.append(r'lib/classifier.py')
-
-import cv2, os
-from pre.norm import *
-from pre.segment import *
-from sklearn.preprocessing import StandardScaler
-from utilities.features import getFeatures
-from utilities.util import *
+from pre.segment import segment_leaf
 from utilities.const import *
+
+import cv2, os, joblib
+from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
+from utilities.util import getFeatures
 
-model_index = 0
+"""
+Identify tool for overall comparison
+"""
+
+model_index = 1
 model_name = MODELS[model_index]
 model = joblib.load(f"{MODEL_PATH}/{model_name}.joblib")
-class_index = 0
+class_index = 1
 test = f'dataset/images/{CLASSES[class_index]}'
+test = r'dataset\messenger'
 predictions = {
     'blb' : 0,
     'hlt' : 0,
@@ -41,7 +40,7 @@ for image_file in os.listdir(test):
     scaler = joblib.load(f"{SCALER_PATH}/{model_name}.pkl")
     X = scaler.transform(X)
 
-    if model_name != "base":
+    if model_name != MODELS[0]:
         selected_features = np.load(f"{FEATURE_PATH}/{model_name}.npy")
         X = X[:,selected_features]
 

@@ -12,31 +12,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from tqdm import tqdm
 import numpy as np
+from lib.WrapperACO import WrapperACO
 
 from utilities.const import *
 
 def BaseModel(features, labels):
-    # Convert class labels to numerical labels
-    unique_labels = np.unique(labels)
-    label_to_id = {label: i for i, label in enumerate(unique_labels)}
-    numerical_labels = np.array([label_to_id[label] for label in labels])
-
-    # Create a SimpleImputer to handle missing values (replace 'mean' with your preferred strategy)
-    imputer = SimpleImputer(strategy='mean')
-
-    # Apply imputation to your feature data
-    X = imputer.fit_transform(features)
-    # Initialize the scaler
-    scaler = StandardScaler()
-
-    # Fit on the imputed data
-    scaler.fit(X)
-    joblib.dump(scaler, f"{SCALER_PATH}/BaseModel.pkl")
-    # Transform the imputed data
-    X = scaler.transform(X)
-
     # Split the data into training and testing sets
-    X_train, X_test, Y_train, Y_test = train_test_split(X, numerical_labels, test_size=0.2, random_state=42)
+    X_train, X_test, Y_train, Y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
 
     # Create an MSVM model with an RBF kernel
     svm = MODEL
@@ -47,11 +29,8 @@ def BaseModel(features, labels):
     # Make predictions on the test set
     Y_pred = svm.predict(X_test)
 
-    # Convert numerical labels back to original class labels
-    predicted_class_labels = [unique_labels[label] for label in Y_pred]
-
     # Generate a classification report
-    report = classification_report(Y_test, Y_pred, target_names=unique_labels, zero_division='warn')
+    report = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, zero_division='warn')
 
     # Calculate the overall accuracy
     overall_accuracy = accuracy_score(Y_test, Y_pred)
@@ -62,9 +41,10 @@ def BaseModel(features, labels):
 
     # Print overall accuracy
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
-    print(f"Features: {X.shape[0]}")
+    print(f"Features: {features.shape[0]}")
     
-    return svm, overall_accuracy
+    print(label_encoder.classes_)
+    return svm, overall_accuracy, None
 
 def useBaseCV(features, labels, cv=5):
     # Convert class labels to numerical labels
@@ -269,7 +249,7 @@ def useACO(features, labels, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0
 
 def useGridSVC(features, labels, param_grid, cv=2):
     # Convert class labels to numerical labels
-    label_encoder = LabelEncoder()
+    
     numerical_labels = label_encoder.fit_transform(labels)
 
     # Split the data into training and testing sets
@@ -308,3 +288,30 @@ def useGridSVC(features, labels, param_grid, cv=2):
     print(report)
 
     return best_params, best_estimator
+
+def createModel(features, labels, selectedFeatures=None):
+    features = features[:, selectedFeatures] if selectedFeatures is not None else features
+    X_train, X_test, Y_train, Y_test = train_test_split(features, labels, test_size=TEST_SIZE, random_state=R_STATE)
+
+    svm = MODEL
+    svm.fit(X_train, Y_train)
+
+    Y_pred = svm.predict(X_test)
+    report = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, zero_division='warn')
+    overall_accuracy = accuracy_score(Y_test, Y_pred)
+
+    print("Wrapper ACO Model Classification Report:")
+    print(report)
+    print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
+    print(f"Features: {features.shape[1]} & {features[:,selectedFeatures].shape[1]}")
+
+    return svm, overall_accuracy
+
+def useWrapperACO(features, labels, aco):
+    print("Starting Ant Colony Optimization")
+    solution, quality = aco.optimize()
+    print("Optimization with Ant Colony Complete")
+    print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
+
+    model, accuracy = createModel(features, labels, solution)
+    return model, accuracy, solution

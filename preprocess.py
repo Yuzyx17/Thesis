@@ -12,7 +12,7 @@ features= []
 labels= []
 
 test = 0
-disease = 4
+disease = 1
 index = 30
 
 if test:
@@ -24,7 +24,6 @@ if test:
     )
 else:
     path = f'dataset/captured/{CLASSES[disease]}/{index}.jpg'
-    path = r'dataset\images\blast\31.jpg'
     img = cv2.imread(path)
     
     # displayChannels(img, alpha=1.25, lower=200, mask=True)

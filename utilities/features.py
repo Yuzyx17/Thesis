@@ -1,13 +1,13 @@
 from skimage.feature import local_binary_pattern
-from skimage.color import rgb2hsv
 from skimage.feature import graycomatrix
 from skimage import img_as_ubyte
 from skimage.feature import hog
 
-from utilities.util import *
+import numpy as np
+import cv2
 
 def getGLCMFeatures(image):
-    gray_image = img_as_ubyte(rgbAsGray(image))
+    gray_image = img_as_ubyte(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
     glcm = graycomatrix(gray_image, distances=[5], angles=[0], symmetric=True, normed=True)
     # Extract features from GLCM
     contrast = np.mean(glcm[0, 0, :, :])
@@ -37,9 +37,9 @@ def getShapeFeatures(image):
 
     return [aspect_ratio, circularity]
 
-def getHOGFeatures(image, orientations=8, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=True):
+def getHOGFeatures(image, orientations, pixels_per_cell, cells_per_block, visualize=True):
     
-    image = rgbAsGray(image)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Display the original image, LBP, and HOG features
     fd, hog_image = hog(image, orientations=orientations, pixels_per_cell=pixels_per_cell,
                     cells_per_block=cells_per_block, visualize=visualize)
@@ -48,7 +48,7 @@ def getHOGFeatures(image, orientations=8, pixels_per_cell=(8, 8), cells_per_bloc
 
 def getLBPFeatures(image, radius=1, points=8):
 
-    image = rgbAsGray(image)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     n_points = points * radius
     lbp_image = local_binary_pattern(image, n_points, radius, method='uniform')
     feature_vector_lbp, _ = np.histogram(lbp_image.ravel(), bins=np.arange(0, n_points + 3), range=(0, n_points + 2))
@@ -114,9 +114,9 @@ def getCoCoFeatures(image):
 
     return coherence_mean, coherence_std
 
-def getHistFeatures(image, bins=256):
+def getHistFeatures(image, bins):
     # Convert the image to grayscale
-    gray_image = rgbAsGray(image)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Compute histogram
     hist, _ = np.histogram(gray_image.flatten(), bins=bins, range=[0, 256])
@@ -132,7 +132,7 @@ def getHistFeatures(image, bins=256):
 
     return [hist_mean, hist_std, hist_entropy]
 
-def getColHistFeatures(image, num_bins=256, channels=(0, 1, 2), ranges=(0, 256)):
+def getColHistFeatures(image, num_bins, channels, ranges):
     hist_features = []
 
     for channel in channels:
@@ -141,17 +141,3 @@ def getColHistFeatures(image, num_bins=256, channels=(0, 1, 2), ranges=(0, 256))
         hist_features.extend(channel_hist)
 
     return hist_features
-
-def getFeatures(image):
-    return np.hstack((
-                    getHOGFeatures(image),
-
-                    getGLCMFeatures(image),
-                    getLBPFeatures(image),
-
-                    getHSVFeatures(image),
-                    getLABFeatures(image),
-                    # getColorFeatures(image),
-                    getColHistFeatures(image),
-                    getCoCoFeatures(image)
-                    ))

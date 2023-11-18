@@ -3,34 +3,7 @@ import cv2
 import numpy as np
 import joblib
 
-from const import *
-from skimage.feature import graycomatrix
-
-def rgbAsGray(img):
-    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-def rgbAsLab(img):
-    return cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-
-def labAsRgb(img):
-    return cv2.cvtColor(img, cv2.COLOR_LAB2BGR)
-
-def rgbAsHsv(img):
-    return cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-
-def hsvAsRgb(img):
-    return cv2.cvtColor(img, cv2.COLOR_HSV2RGB)
-
-def useMask(img, mask):
-    return cv2.bitwise_and(img, img, mask=mask)
-
-def useShape(img, x=-1, y=3):
-    return img.reshape((x, y))
-
-def loadDataSet(params=None):
-    dataSet = ...
-    if params is not None:
-        dataSet = params
+from utilities.const import *
 
 def displayImages(size=175, **imgs):
     for name, img in imgs.items():
@@ -128,25 +101,20 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
         u=leaf,
     )
 
-
-def progressBar(count_value, total, suffix=''):
-    bar_length = 100
-    filled_up_Length = int(round(bar_length* count_value / float(total)))
-    percentage = round(100.0 * count_value/float(total),1)
-    bar = '=' * filled_up_Length + '-' * (bar_length - filled_up_Length)
-    sys.stdout.write('[%s] %s%s ...%s\r' %(bar, percentage, '%', suffix))
-    sys.stdout.flush()
-    
 def stopWait():
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-def saveSVC(model, name="base"):
+def saveModel(model, name, subset=None):
     print("Model Saving")
-    # Define the file path where you want to save the model
-    model_file_path = f"{MODEL_PATH}/{name}.joblib"
-
-    # Save the trained MSVM model to the specified file
-    joblib.dump(model, model_file_path)
+    joblib.dump(model, f"{MODEL_PATH}/{MODELS[name]}.joblib")
+    joblib.dump(scaler, f"{SCALER_PATH}/{MODELS[name]}.pkl")
+    if subset is not None:
+        np.save(f"{FEATURE_PATH}/{MODELS[name]}.npy", subset)
     print("Model Saved")
 
+def getFeatures(image):
+    features = []
+    for feature_name, feature_func in FEATURES:
+        features.append(feature_func(image))
+    return np.hstack(features)

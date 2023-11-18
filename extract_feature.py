@@ -32,23 +32,17 @@ for class_folder in os.listdir(DATASET_PATH):
         features.append(getFeatures(image))
         labels.append(class_label)
 
-        # Apply augmentations
-        # print(f'{class_label}:{image_file}')
         for augmentation_name, augmentation_fn in AUGMENTATIONS:
-            # print(f'{class_label}:{image_file}-{augmentation_name}')
-
             aug_image = augmentation_fn(image)
 
             features.append(getFeatures(aug_image))
             labels.append(class_label)
 
-print("Saving Features")
 
 features = np.array(features)
 labels = np.array(labels)
-f = features
-l = labels
+
+print(f"Saving Features ({features.shape})")
 np.save(f"{DATA_PATH}/features.npy", features)
 np.save(f"{DATA_PATH}/labels.npy", labels)
-
 print("Features Saved")

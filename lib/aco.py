@@ -73,7 +73,7 @@ class WrapperAntColonyOptimization:
     def update_pheromone(self, tau: npt.NDArray, delta_tau: npt.NDArray):
         return (1 - self.rho) * tau + delta_tau
     
-    # Objective function for wrapper feature selection
+    # Objective function for wrapper feature selection, gets the path (solution subset)
     def fitness(self, features, labels, path):
         selected_features = features[:, path]
 
@@ -102,8 +102,8 @@ class WrapperAntColonyOptimization:
             node = self.transition(node, path, tau, eta) # Transitions from current node 'i' to the next node 'j'
             path.append(node) # Append the transitioned node
         
-        solution = np.array(path)
-        fitness = self.fitness(features, labels, solution)
+        solution = np.array(path) # Get the solution as an numpy array
+        fitness = self.fitness(features, labels, solution) # Evaluate subset solution
 
         if self.debug >= 5:
             print(f"{ant+1}: {solution} {fitness*100:.2f} {len(solution)}")
@@ -143,12 +143,11 @@ class WrapperAntColonyOptimization:
             tau = self.update_pheromone(tau, delta_tau)
 
             if self.debug:
-                print(f"Solution at current Iteration {iteration + 1} {global_solution} {global_accuracy:02f} {len(global_solution)}")
+                print(f"Solution:\t{iteration + 1} {global_solution} {global_accuracy:02f} {len(global_solution)}")
                 
         return global_solution, global_accuracy
 
-
-def WrapperACO(features, labels, ants=30, iterations=100, parallel=False, debug=1, fold=1):
+def WrapperAACO(features, labels, ants=30, iterations=100, parallel=False, debug=1, fold=1):
     label_encoder = LabelEncoder()
     numerical_labels = label_encoder.fit_transform(labels)
     
@@ -165,7 +164,7 @@ def WrapperACO(features, labels, ants=30, iterations=100, parallel=False, debug=
     aco = WrapperAntColonyOptimization(MODEL, ants=ants, iterations=iterations, debug=debug, folds=fold, parrallelization=parallel)
     selected_features, feature_fitness = aco.optimize(X, numerical_labels)
     print("Optimization with Ant Colony Complete")
-    print(f"Solution: {np.sort(selected_features)} with {feature_fitness:.2f}% accuracy")
+    print(f"Solution: {np.sort(selected_features)} with {100*feature_fitness:.2f}% accuracy")
 
     np.save(f"{FEATURE_PATH}/AntColony.npy", selected_features)
 
