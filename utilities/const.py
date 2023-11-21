@@ -25,6 +25,7 @@ INITIAL PAThS
 MODEL_PATH = r'dataset\model\models'
 SCALER_PATH = r'dataset\model\scalers'
 FEATURE_PATH = r'dataset\model\features'
+UNSEEN_PATH = r'dataset\images'
 DATA_PATH = r'dataset\model'
 DATASET_PATH = r'dataset\captured'
 AUG_PATH = r'dataset\augmented'
@@ -67,6 +68,7 @@ TEST_SIZE = 0.2 #  Percentage of test size
 """
 OBJECTIVE FUNCTION
 """
+
 def fitness(features, labels, subset):
     selected_features = features[:, subset]
 
@@ -85,8 +87,7 @@ def fitness(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W, FEAT_H = 100, 100
-
+FEAT_W, FEAT_H = 50, 50
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0
@@ -120,17 +121,35 @@ ORIENT = 9
 RADIUS = 1
 POINTS = 8 * RADIUS
 
+# GLCM (TEXTURE) FEATURES
+DISTANCE = 1
+ANGLES = 0
+LEVELS = 256
+
 # COLOR HISTOGRAM FEATURES
 BINS = 256
 CHANNELS = (0, 1, 2)
 RANGES = (0, 256)
 
-FEATURES = [
-    ('HOG', lambda image: getHOGFeatures(image, ORIENT, PPC, CPB)),
-    ('GLCM', lambda image: getGLCMFeatures(image)),
-    ('LBP', lambda image: getLBPFeatures(image)),
-    ('HSV', lambda image: getHSVFeatures(image)),
-    ('LAB', lambda image: getLABFeatures(image)),
-    ('COLHIST', lambda image: getColHistFeatures(image, BINS, CHANNELS, RANGES)),
-    ('COCO', lambda image: getCoCoFeatures(image))
-]
+# COLOR COHERANCE FEATURES
+N_BINS = 8
+
+FEATURES = {
+    'SHP-HOG' : lambda image: getHOGFeatures(image, ORIENT, PPC, CPB), 
+    'TXR-GLCM': lambda image: getGLCMFeatures(image, DISTANCE, ANGLES, LEVELS),
+    'TXR-LBP' : lambda image: getLBPFeatures(image),
+    'COL-HSV' : lambda image: getHSVFeatures(image),
+    'COL-LAB' : lambda image: getLABFeatures(image),
+    'COL-RGB' : lambda image: getRGBFeatures(image),
+    'COL-STAT' : lambda image: getStatFeatures(image),
+    'COL-COLHIST': lambda image: getColHistFeatures(image, BINS, CHANNELS, RANGES),
+    'COL-HIST': lambda image: getHistFeatures(image, BINS),
+    'COL-CCV': lambda image: getCCVFeatures(image, N_BINS)
+}
+
+GROUPED_FEATURES = {}
+for feature, _ in FEATURES.items():
+    prefix = feature.split('-')[0]  # Extract the prefix
+    if prefix not in GROUPED_FEATURES:
+        GROUPED_FEATURES[prefix] = []
+    GROUPED_FEATURES[prefix].append(feature)

@@ -1,119 +1,132 @@
-import sys
-sys.path.append(r'lib')
-sys.path.append(r'utilities')
-sys.path.append(r'lib/classifier.py')
-sys.path.append(r'utilities/features.py')
+import json
+import math
+import time, itertools
+from utilities.const import *
 
-import cv2, os, time
-
+from datetime import datetime
 from pre.norm import *
 from pre.segment import *
 from utilities.features import *
 from lib.classifier import *
-from tqdm import tqdm
+from lib.WrapperACO import *
 
-features= []
-labels= []
+models = [Model.AntColony, Model.BaseModel]
+images = []
+# Generate Combinations of Features
+combinations = []
+for i in range(1, len(GROUPED_FEATURES) + 1):
+    for subset in itertools.combinations(GROUPED_FEATURES, i):
+        combination = []
+        for item in subset:
+            for feature_type in GROUPED_FEATURES[item]:
+                combination.append(feature_type)
+        combinations.append(combination)
 
-# Pre process, Segment and Feature extract
+print("Preparing Images")
+labels = []
 for class_folder in os.listdir(DATASET_PATH):
     class_label = class_folder
     class_path = os.path.join(DATASET_PATH, class_folder)
     print(f"Class Label: {class_label}")
     if not os.path.exists(class_path):
         continue 
-
     # Loop through the images in the class folder
     for image_file in tqdm(os.listdir(class_path)):
         image_path = os.path.join(class_path, image_file)
         image = cv2.imread(image_path) 
-        border_size = 10  # Adjust the border size as needed
-        image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
+        image = segment_leaf(image)
 
-        # Pre processing
-        test = useWWhiteBalance(image)
-        test = cv2.medianBlur(test, ksize=3)
-
-        lab = cv2.cvtColor(test, cv2.COLOR_RGB2LAB)
-        hsv = cv2.cvtColor(test, cv2.COLOR_RGB2HSV)
-        l, a, B = cv2.split(lab)
-        h, s, v = cv2.split(hsv)
-        r, g, b = cv2.split(test)
-
-        v = cv2.equalizeHist(v)
-        g = cv2.equalizeHist(g)
-
-        v = cv2.convertScaleAbs(v, alpha=1.25)
-        g = cv2.convertScaleAbs(g, alpha=1.25)
-
-        _, v = cv2.threshold(v, 195, 255, cv2.THRESH_BINARY)
-        _, g = cv2.threshold(g, 195, 255, cv2.THRESH_BINARY)
-
-        kernel_shape = cv2.MORPH_RECT  # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
-        kernel_size = (5, 5)  # Adjust the size as needed
-        kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
-        
-        # Segmentation
-        mask = cv2.bitwise_xor(v, s)
-        mask = cv2.bitwise_xor(mask, g)
-        mask = cv2.dilate(mask, kernel, iterations=2)
-
-        # Thresholding
-        _, mask = cv2.threshold(mask, 196, 255, cv2.THRESH_BINARY)
-        image = cv2.bitwise_and(image, image, mask=mask)
-        mask = cv2.resize(mask, (FEAT_W, FEAT_H))
-
-        features.append(getFeatures(image))
+        images.append(image)
         labels.append(class_label)
 
-        # Apply augmentations
-        # print(f'{class_label}:{image_file}')
         for augmentation_name, augmentation_fn in AUGMENTATIONS:
-            # print(f'{class_label}:{image_file}-{augmentation_name}')
-
             aug_image = augmentation_fn(image)
-
-            features.append(getFeatures(aug_image))
+            images.append(aug_image)
             labels.append(class_label)
 
-features = np.array(features)
-labels = np.array(labels)
+Y = np.array(labels)
+Y = label_encoder.fit_transform(Y)
 
-unique_labels = np.unique(labels)
-label_to_id = {label: i for i, label in enumerate(unique_labels)}
-numerical_labels = np.array([label_to_id[label] for label in labels])
+save = False
+print("Starting Exhaustive Training")
+for model in models:
+    with open(f'{model.name}_report.json', 'w') as file:
+        file.write('')
+    print("Start: ", model.name)
+    for combination in combinations:
+        print("Combination: ", combination)
+        X = []
+        for image in images:
+            img_feature = []
+            for feature in combination:
+                img_feature.extend(FEATURES[feature](image))
+            img_feature = np.array(img_feature)
+            X.append(img_feature)
+        X = np.array(X)
+        scaler.fit(X)
+        X = scaler.transform(X)
 
-# Create a SimpleImputer to handle missing values (replace 'mean' with your preferred strategy)
-imputer = SimpleImputer(strategy='mean')
+        def fitness_function(_subset): return fitness(X, Y, _subset)
+        subset = np.arange(0, X.shape[1])
+        accuracy = fitness(X, Y, subset)
 
-# Apply imputation to your feature data
-X = imputer.fit_transform(features)
-# Initialize the scaler
-scaler = StandardScaler()
+        start = time.time()
+        match model:
+            case Model.BaseModel:
+                classifier, accuracy = createModel(X, Y)
+            case Model.AntColony:
+                aco = WrapperACO(fitness_function,
+                                X.shape[1], ants=5, iterations=10, debug=1, accuracy=accuracy)
+                classifier, accuracy, subset = useWrapperACO(X, Y, aco)
 
-# Fit on the imputed data
-scaler.fit(X)
-joblib.dump(scaler, f"{SCALER_PATH}/BaseModel.pkl")
-# Transform the imputed data
-X = scaler.transform(X)
+        end = time.time()
+        hours, remainder = divmod(int(end-start), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        elapsed = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
-# Split the data into training and testing sets
-X_train, X_test, Y_train, Y_test = train_test_split(X, numerical_labels, test_size=0.2, random_state=42)
+        predictions = {
+            'blb' : None,
+            'hlt' : None,
+            'rbl' : None,
+            'sbt' : None,
+        }
+        diseases = ['blb', 'hlt', 'rbl', 'sbt']
 
-# Create an MSVM model with an RBF kernel
-svm = CLASSIFIER
+        for class_folder in os.listdir(UNSEEN_PATH):
+            amount = 0
+            correct = 0
+            curclass = diseases.index(class_folder)
+            for image_file in os.listdir(f"{UNSEEN_PATH}/{class_folder}"):
+                amount += 1
+                image_path = os.path.join(f"{UNSEEN_PATH}/{class_folder}", image_file)
+                image = cv2.imread(image_path) 
+                image = segment_leaf(image)
+                img_feature = []
+                for feature in combination:
+                    img_feature.extend(FEATURES[feature](image))
+                img_feature = np.array(img_feature)
+                unseen = [img_feature]
+                unseen = scaler.transform(unseen)
 
-# Train the model on the training data
-svm.fit(X_train, Y_train)
+                if model is not Model.BaseModel:
+                    unseen = unseen[:,subset]
+                prediction = classifier.predict(unseen)[0]
+                correct += 1 if prediction == curclass else 0
+  
+            predictions[diseases[curclass]] = f"{(correct/amount)*100:.2f}%"
 
-# Make predictions on the test set
-Y_pred = svm.predict(X_test)
 
-# Convert numerical labels back to original class labels
-predicted_class_labels = [unique_labels[label] for label in Y_pred]
-
-# Generate a classification report
-report = classification_report(Y_test, Y_pred, target_names=unique_labels, zero_division='warn')
-
-# Calculate the overall accuracy
-overall_accuracy = accuracy_score(Y_test, Y_pred)
+        log = {"Model": {"Name": model.name, "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), "Elapsed": elapsed, 'Image Size:' : f"{FEAT_W}x{FEAT_H}", "Accuracy": f"{100*accuracy:.2f}%", "Saved": "True" if save else "False",
+                 'Images': X.shape[0], "Features": {'Amount': subset.shape[0], 'Feature': combination}, 'Augmentations': [aug[0] for aug in AUGMENTATIONS], "Predictions": predictions, 
+                 'Additional': 'None' if model is Model.BaseModel else ({
+                     'Ants': aco.ants,
+                     'Iterations': aco.iterations,
+                     'Rho': aco.rho,
+                     'Q': aco.Q,
+                     'Alpha': aco.alpha,
+                     'Beta': aco.beta
+                 } if model is Model.AntColony else 'None')}}
+        
+        with open(f'{model.name}_report.json', 'a') as logs:
+            logs.write(json.dumps(log, indent=4))
+            logs.write(f"\n")

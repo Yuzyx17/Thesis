@@ -9,11 +9,10 @@ Identify tool for overall comparison
 """
 
 model = Model.BaseModel
-disease = Disease.blb
+disease = Disease.rbl
 classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
-test = f'dataset/images/{disease.name}'
-test = r'dataset/messenger'
-
+test = f'{UNSEEN_PATH}/{disease.name}'
+# test = r'dataset\messenger\rbl'
 predictions = {
     'blb' : 0,
     'hlt' : 0,
@@ -24,6 +23,7 @@ predictions = {
 amt = 0
 per_image = 0
 print("Predicting New Images")
+scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
 # Loop through the images in the class folder
 for image_file in os.listdir(test):
     amt += 1
@@ -32,7 +32,6 @@ for image_file in os.listdir(test):
     image = segment_leaf(image)
     X = [getFeatures(image)]
     
-    scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
     X = scaler.transform(X)
 
     if model is not Model.BaseModel:

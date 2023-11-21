@@ -115,6 +115,9 @@ def saveModel(classifier, model, subset=None):
 
 def getFeatures(image):
     features = []
-    for feature_name, feature_func in FEATURES:
-        features.append(feature_func(image))
-    return np.hstack(features)
+    for _, feature_func in FEATURES.items():
+        features.extend(feature_func(image))
+    return np.array(features)
+
+    
+

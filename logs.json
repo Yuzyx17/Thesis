@@ -1,25 +1,381 @@
-{"Model": {"Name": "BaseModel", "Date": "2023/11/16 18:12:10", "Elapsed": "00:00:17", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "BaseModel", "Date": "2023/11/16 18:12:33", "Elapsed": "00:00:16", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/16 18:41:31", "Elapsed": "00:00:05", "Accuracy": "0.86", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/17 00:00:17", "Elapsed": "05:09:48", "Accuracy": "0.93", "Saved": "True"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/17 09:40:24", "Elapsed": "00:03:14", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 14:55:11", "Elapsed": "00:01:46", "Accuracy": "0.92", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 15:00:57", "Elapsed": "00:01:07", "Accuracy": "0.90", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 15:05:45", "Elapsed": "00:04:08", "Accuracy": "0.90", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:17:01", "Elapsed": "00:04:12", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:20:34", "Elapsed": "00:01:10", "Accuracy": "0.92", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:28:19", "Elapsed": "00:00:48", "Accuracy": "0.93", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:29:21", "Elapsed": "00:00:40", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "ParticleSwarm", "Date": "2023/11/18 16:30:36", "Elapsed": "00:00:24", "Accuracy": "0.90", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:41:01", "Elapsed": "00:00:25", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:42:25", "Elapsed": "00:00:45", "Accuracy": "0.92", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:44:19", "Elapsed": "00:00:20", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:51:29", "Elapsed": "00:00:37", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 16:53:47", "Elapsed": "00:00:30", "Accuracy": "0.92", "Saved": "False"}}
-{"Model": {"Name": "BaseModel", "Date": "2023/11/18 17:04:38", "Elapsed": "00:00:16", "Accuracy": "0.91", "Saved": "True"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 17:24:18", "Elapsed": "00:07:36", "Accuracy": "0.92", "Saved": "True"}}
-{"Model": {"Name": "BaseModel", "Date": "2023/11/18 17:35:44", "Elapsed": "00:00:16", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "BaseModel", "Date": "2023/11/18 17:37:21", "Elapsed": "00:00:17", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "AntColony", "Date": "2023/11/18 17:57:46", "Elapsed": "00:01:30", "Accuracy": "0.92", "Saved": "False"}}
-{"Model": {"Name": "BaseModel", "Date": "2023/11/18 22:53:41", "Elapsed": "00:00:18", "Accuracy": "0.91", "Saved": "False"}}
-{"Model": {"Name": "BaseModel", "Date": "2023/11/18 22:54:15", "Elapsed": "00:00:19", "Accuracy": "0.91", "Saved": "True"}}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 17:37:24",
+        "Elapsed": "00:00:04",
+        "Accuracy": "67.71%",
+        "Saved": "True",
+        "Features": {
+            "Amount": 625,
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 17:40:54",
+        "Elapsed": "00:00:33",
+        "Accuracy": "90.97%",
+        "Saved": "True",
+        "Features": {
+            "Amount": 3297,
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 20:44:20",
+        "Elapsed": "00:00:14",
+        "Accuracy": "83.33%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                940
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 20:51:11",
+        "Elapsed": "00:01:01",
+        "Accuracy": "94.44%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3244
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 22:23:09",
+        "Elapsed": "00:00:32",
+        "Accuracy": "94.44%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3244
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 23:30:35",
+        "Elapsed": "00:00:30",
+        "Accuracy": "94.79%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3245
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 23:42:57",
+        "Elapsed": "00:00:53",
+        "Accuracy": "94.10%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3755
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 23:47:57",
+        "Elapsed": "00:00:45",
+        "Accuracy": "94.10%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3749
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 23:54:37",
+        "Elapsed": "00:00:42",
+        "Accuracy": "94.10%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3755
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/21 23:59:41",
+        "Elapsed": "00:00:52",
+        "Accuracy": "94.10%",
+        "Saved": "True",
+        "Features": {
+            "Amount": [
+                3758
+            ],
+            "Feature": [
+                "S",
+                "T",
+                "T",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C",
+                "C"
+            ]
+        },
+        "Augmentations": [
+            "H_FLIP",
+            "V_FLIP",
+            "ROT90C",
+            "ROT180",
+            "ROT90O",
+            "CONINC",
+            "CONDEC",
+            "BR_INC",
+            "BR_DEC",
+            "IMBLUR",
+            "SHARPN"
+        ],
+        "Image Size:": "50x50"
+    }
+}

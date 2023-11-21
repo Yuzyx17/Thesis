@@ -5,16 +5,11 @@ import numpy.typing as npt
 
 from typing import List
 from joblib import Parallel, delayed
-from sklearn.calibration import LabelEncoder
-from sklearn.discriminant_analysis import StandardScaler
-from sklearn.impute import SimpleImputer
-from sklearn.model_selection import KFold, cross_val_score, train_test_split
-from sklearn.metrics import accuracy_score, classification_report
 from utilities.const import *
 np.set_printoptions(threshold=10)
 
-class WrapperACO:
-    def __init__(self, fitness, features, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0.1, Q=1.0, debug=False, parrallelization=False, cores=0):
+class WrapperACO(object):
+    def __init__(self, fitness, n_features, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0.1, Q=1.0, debug=False, parrallel=False, cores=0, accuracy=0.0):
         """
         Initialize the ACOFeatureSelection class with parameters for ACO-based feature selection.
 
@@ -36,16 +31,16 @@ class WrapperACO:
         self.Q = Q
 
         self.debug = debug
-        self.parallelization = parrallelization
+        self.parallelization = parrallel
 
         self.fitness = fitness
-        self.features = features
+        self.features = n_features
         self.tau = np.ones((self.features, self.features))
         self.eta = np.ones((self.features, self.features))
-        self.accuracy = 0.0
-        self.solution = None
+        self.accuracy = accuracy
+        self.solution = np.arange(0, self.features)
 
-        if cores == 0:
+        if cores == 0 and self.parallelization:
             self.cores = os.cpu_count() // 2
             self.cores = self.cores if self.cores // 2 >= os.cpu_count() else self.cores + 1 
         else:
@@ -53,7 +48,7 @@ class WrapperACO:
         assert self.cores <= os.cpu_count()
 
         if self.debug:
-            print(f"Settings:\nalpha={self.alpha}\nbeta={self.beta}\nrho={self.rho}\nQ={self.Q}\nants={self.ants} iterations={self.iterations}")
+            print(f"Settings:\nalpha={self.alpha} beta={self.beta} rho={self.rho} Q={self.Q}\nants={self.ants} iterations={self.iterations} features={self.features}")
             if self.parallelization:
                 print(f"Parralelization={self.parallelization} cores={self.cores}")
 
@@ -65,7 +60,6 @@ class WrapperACO:
         M[current] = 0 # Current Node is set to 0 Probability
         P = N / M.sum()
         node = np.random.choice(len(P), p=P)
-        # print(f"\t", current, np.round(P,2))
         return node
 
     # Update delta tau for each path
@@ -127,4 +121,31 @@ class WrapperACO:
             if self.debug:
                 print(f"Solution:\t {self.solution} {self.accuracy:02f} {len(self.solution)} {subset_amount}")
 
+        return self.solution, self.accuracy
+    
+    def start_run(self, iterations=None):
+        self.iterations = iterations if iterations is not None else self.iterations
+        self.optimize()
+        self.fitness = None
+        joblib.dump(self, f"{DATA_PATH}/WrapperAco.pkl")
+        return self.solution, self.accuracy
+    
+    def continue_run(self, fit, iterations=None):
+        assert os.path.exists(f"{DATA_PATH}/WrapperAco.pkl"), "No WrapperACO found, start with start_run method"
+        self = joblib.load(f"{DATA_PATH}/WrapperAco.pkl")
+        print(self.__dict__['tau'])
+        self.fitness = fit
+        self.iterations = iterations if iterations is not None else self.iterations
+        self.optimize()
+        self.fitness = None
+        joblib.dump(self, f"{DATA_PATH}/WrapperAco.pkl")
+        return self.solution, self.accuracy
+
+    def finish_run(self, fit, iterations):
+        assert os.path.exists(f"{DATA_PATH}/WrapperAco.pkl"), "No WrapperACO found, start with start_run method"
+        self = joblib.load(f"{DATA_PATH}/WrapperAco.pkl")
+        print(self.__dict__['tau'])
+        self.fitness = fit
+        self.iterations = iterations
+        self.optimize()
         return self.solution, self.accuracy

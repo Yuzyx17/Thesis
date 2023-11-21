@@ -1,10 +1,4 @@
-import sys
-sys.path.append(r'lib')
-sys.path.append(r'utilities')
-sys.path.append(r'lib/classifier.py')
-sys.path.append(r'utilities/features.py')
-
-import cv2, os, time
+import cv2, os
 
 from pre.norm import *
 from pre.segment import *
@@ -37,7 +31,6 @@ for class_folder in os.listdir(DATASET_PATH):
 
             features.append(getFeatures(aug_image))
             labels.append(class_label)
-
 
 features = np.array(features)
 labels = np.array(labels)

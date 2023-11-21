@@ -11,7 +11,7 @@ from utilities.util import displayImages, stopWait
 features= []
 labels= []
 
-test = 1
+test = 0
 disease = Disease.blb
 index = 30
 
@@ -24,7 +24,7 @@ if test:
     )
 else:
     path = f'dataset/captured/{disease.value}/{index}.jpg'
-    path = r'dataset\messenger\400494682_670061615265358_6719037052584215852_n.jpg'
+    path = r'dataset\messenger\rbl\400714226_290472176661866_605769235617517701_n.jpg'
     img = cv2.imread(path)
     
     # displayChannels(img, alpha=1.25, lower=200, mask=True)
