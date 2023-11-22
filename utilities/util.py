@@ -1,7 +1,7 @@
 import sys
 import cv2
 import numpy as np
-import joblib
+import joblib, functools
 
 from utilities.const import *
 
@@ -99,11 +99,30 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
         c=c,
         p=dise,
         u=leaf,
-    )
+    )   
 
 def stopWait():
     cv2.waitKey()
     cv2.destroyAllWindows()
+
+# def predictImage(image, model: Model):
+    # classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
+    # scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
+    # encoder = joblib.load(r'dataset\model\encoder.joblib')
+
+    # image = cv2.imread(image) 
+    # image = segment_leaf(image)
+    # X = [getFeatures(image)]
+    # X = scaler.transform(X)
+
+    # if model is not Model.BaseModel:
+    #     selected_features = np.load(f"{FEATURE_PATH}/{model.name}.npy")
+    #     X = X[:,selected_features]
+    
+    # prediction = classifier.predict_proba(X)
+    # print(encoder.classes_)
+
+    # return prediction
 
 def saveModel(classifier, model, subset=None):
     print("Model Saving")
@@ -118,6 +137,3 @@ def getFeatures(image):
     for _, feature_func in FEATURES.items():
         features.extend(feature_func(image))
     return np.array(features)
-
-    
-

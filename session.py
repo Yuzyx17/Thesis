@@ -4,6 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 from typing import List
+from utilities.util import predictImage
 from utilities.const import *
 
 from lib.WrapperACO import WrapperACO
@@ -111,3 +112,8 @@ def explore(features, labels):
 # aco.continue_run(fit, 1)
 # aco.continue_run(fit, 1)
 # aco.finish_run(fit, 1)
+
+
+prediction = predictImage(r"dataset\images\hlt\shape 10 .jpg", Model.BaseModel)
+print(DISEASES, f'\n', np.round(prediction, 2))
+print(DISEASES[np.argmax(prediction[0])])

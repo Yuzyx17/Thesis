@@ -10,6 +10,23 @@ from sklearn.svm import SVC
 
 from utilities.const import *
 
+def evaluate_particle(X_selected, y, particle, threshold):
+    # Apply threshold θ to select features
+    selected_features = np.where(particle > threshold)[0]
+
+    # Calculate the objective function value
+    if np.sum(selected_features) == 0:
+        score = 1.0  # Avoid division by zero
+    else:
+        X_selected_particle = X_selected[:, selected_features]
+        classifier = SVC(kernel='rbf', C=10)
+        classifier.fit(X_selected_particle, y)
+        y_pred = classifier.predict(X_selected_particle)
+        accuracy = accuracy_score(y, y_pred)
+        score = 1.0 - accuracy  # Minimize 1 - accuracy
+
+    return score, selected_features
+
 def custom_pso(X, y, num_particles, num_iterations, c1, c2, w, threshold):
     num_features = X.shape[1]
     lb = [0] * num_features  # Lower bound for each feature (0: not selected, 1: selected)
@@ -17,8 +34,7 @@ def custom_pso(X, y, num_particles, num_iterations, c1, c2, w, threshold):
 
     # Initialize particle positions and velocities
     particles = np.random.uniform(0, 1, (num_particles, num_features))
-    velocities = np.zeros((num_particles, num_features)) # have zeroes as initial value of velocities
-    # velocities = np.random.uniform(0, 1, (num_particles, num_features)) randomly generate initial value for velocities
+    velocities = np.zeros((num_particles, num_features))
     personal_best_positions = particles.copy()
     personal_best_scores = np.ones(num_particles)
 
@@ -27,44 +43,32 @@ def custom_pso(X, y, num_particles, num_iterations, c1, c2, w, threshold):
     global_best_position = personal_best_positions[global_best_index]
 
     for iteration in range(num_iterations):
-        print(f"Iteration {iteration+1}")
-        for i in range(num_particles):
-            # Update particle velocities
-            r1, r2 = np.random.rand(2)
-            velocities[i] = w * velocities[i] + c1 * r1 * (personal_best_positions[i] - particles[i]) + c2 * r2 * (global_best_position - particles[i])
-            
-            # Update particle positions
-            particles[i] = particles[i] + velocities[i]
-            
-            # Clamp particle positions to the lower and upper bounds
-            particles[i] = np.clip(particles[i], lb, ub)
+        # Evaluate particles in parallel
+        results = joblib.Parallel(n_jobs=CORES)(joblib.delayed(evaluate_particle)(X, y, particles[i], threshold) for i in range(num_particles))
 
-            # Apply threshold θ to select features
-            selected_features = np.where(particles[i] > threshold)[0]
-
-            # Calculate the objective function value
-            selected_features = np.where(particles[i])[0]
-            if np.sum(selected_features) == 0:
-                score = 1.0  # Avoid division by zero
-            else:
-                X_selected = X[:, selected_features]
-                kfold = KFold(n_splits=FOLDS, shuffle=True, random_state=42)
-                classifier = SVC(kernel='rbf', C=10, probability=True)
-                y_pred = cross_val_predict(classifier, X_selected, y, cv=kfold)
-                accuracy = accuracy_score(y, y_pred)
-                score = 1.0 - accuracy  # Minimize 1 - accuracy
-            
+        for i, (score, selected_features) in enumerate(results):
             # Update personal best position and score
             if score < personal_best_scores[i]:
                 personal_best_scores[i] = score
                 personal_best_positions[i] = particles[i]
-            
+
                 # Update global best position
                 if score < personal_best_scores[global_best_index]:
                     global_best_index = i
                     global_best_position = personal_best_positions[i]
 
-        print(f"Solution at current Iteration {iteration + 1} {global_best_position}")
+        for i in range(num_particles):
+            # Update particle velocities
+            r1, r2 = np.random.rand(2)
+            velocities[i] = w * velocities[i] + c1 * r1 * (personal_best_positions[i] - particles[i]) + c2 * r2 * (
+                        global_best_position - particles[i])
+
+            # Update particle positions
+            particles[i] = particles[i] + velocities[i]
+
+            # Clamp particle positions to the lower and upper bounds
+            particles[i] = np.clip(particles[i], lb, ub)
+
     return global_best_position
 
 
@@ -90,7 +94,7 @@ def WrapperPSO(features, labels, swarm=30, iterations=100):
 
     X_train, X_test, Y_train, Y_test = train_test_split(X[:, selected_features], numerical_labels, test_size=0.2, random_state=42)
 
-    svm = MODEL
+    svm = CLASSIFIER
     svm.fit(X_train, Y_train)
 
     Y_pred = svm.predict(X_test)

@@ -6,6 +6,8 @@ from pre.norm import *
 def segment_leaf(image):
     border_size = 10  # Adjust the border size as needed
     image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
+    
+    # Pre processing
     test = useWhiteBalance(image)
     test = cv2.medianBlur(test, ksize=3)
 
@@ -31,6 +33,7 @@ def segment_leaf(image):
     # Create the kernel
     kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
     
+    # Thresholding based segmentation
     leaf = cv2.bitwise_xor(v, s)
     leaf = cv2.bitwise_xor(leaf, g)
     leaf = cv2.dilate(leaf, kernel, iterations=2)

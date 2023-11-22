@@ -10,7 +10,7 @@ from utilities.features import *
 from lib.classifier import *
 from lib.WrapperACO import *
 
-models = [Model.AntColony, Model.BaseModel]
+models = [Model.BaseModel, Model.ParticleSwarm, Model.AntColony]
 images = []
 # Generate Combinations of Features
 combinations = []
@@ -24,60 +24,66 @@ for i in range(1, len(GROUPED_FEATURES) + 1):
 
 print("Preparing Images")
 labels = []
-for class_folder in os.listdir(DATASET_PATH):
-    class_label = class_folder
-    class_path = os.path.join(DATASET_PATH, class_folder)
-    print(f"Class Label: {class_label}")
-    if not os.path.exists(class_path):
-        continue 
-    # Loop through the images in the class folder
-    for image_file in tqdm(os.listdir(class_path)):
-        image_path = os.path.join(class_path, image_file)
-        image = cv2.imread(image_path) 
-        image = segment_leaf(image)
+if os.path.exists(f"{DATA_PATH}/images.npy"):
+    images = np.load(f"{DATA_PATH}/images.npy")
+    labels = np.load(f"{DATA_PATH}/labels.npy")
+else:
+    for class_folder in os.listdir(DATASET_PATH):
+        class_label = class_folder
+        class_path = os.path.join(DATASET_PATH, class_folder)
+        print(f"Class Label: {class_label}")
+        if not os.path.exists(class_path):
+            continue 
+        # Loop through the images in the class folder
+        for image_file in tqdm(os.listdir(class_path)):
+            image_path = os.path.join(class_path, image_file)
+            image = cv2.imread(image_path) 
+            image = segment_leaf(image)
 
-        images.append(image)
-        labels.append(class_label)
-
-        for augmentation_name, augmentation_fn in AUGMENTATIONS:
-            aug_image = augmentation_fn(image)
-            images.append(aug_image)
+            images.append(image)
             labels.append(class_label)
 
-Y = np.array(labels)
-Y = label_encoder.fit_transform(Y)
+    Y = np.array(labels)
+    Y = label_encoder.fit_transform(Y)
 
 save = False
 print("Starting Exhaustive Training")
-for model in models:
-    with open(f'{model.name}_report.json', 'w') as file:
-        file.write('')
-    print("Start: ", model.name)
-    for combination in combinations:
-        print("Combination: ", combination)
-        X = []
-        for image in images:
-            img_feature = []
-            for feature in combination:
-                img_feature.extend(FEATURES[feature](image))
-            img_feature = np.array(img_feature)
-            X.append(img_feature)
-        X = np.array(X)
-        scaler.fit(X)
-        X = scaler.transform(X)
 
-        def fitness_function(_subset): return fitness(X, Y, _subset)
-        subset = np.arange(0, X.shape[1])
-        accuracy = fitness(X, Y, subset)
+for combination in combinations:
+    print("Combination: ", combination)
+    X = []
+    for image in images:
+        img_feature = []
+        for feature in combination:
+            img_feature.extend(FEATURES[feature](image))
+        img_feature = np.array(img_feature)
+        X.append(img_feature)
+    X = np.array(X)
+    scaler.fit(X)
+    X = scaler.transform(X)
 
+    def fitness_function(_subset): return fitness(X, Y, _subset)
+    subset = np.arange(0, X.shape[1])
+    fit_accuracy = 0
+
+    if combinations.index(combination) == len(combinations) - 1:
+        save = True
+
+    for model in models:
         start = time.time()
+
         match model:
             case Model.BaseModel:
                 classifier, accuracy = createModel(X, Y)
+                fit_accuracy = accuracy
             case Model.AntColony:
                 aco = WrapperACO(fitness_function,
-                                X.shape[1], ants=5, iterations=10, debug=1, accuracy=accuracy)
+                                X.shape[1], ants=10, iterations=15, parrallel=True, debug=1, accuracy=fit_accuracy)
                 classifier, accuracy, subset = useWrapperACO(X, Y, aco)
+            case Model.ParticleSwarm:
+                classifier, accuracy, subset = useWrapperPSO(X, Y, swarm=10, iterations=15)
+        if save:
+            saveModel(classifier, model, subset)
 
         end = time.time()
         hours, remainder = divmod(int(end-start), 3600)

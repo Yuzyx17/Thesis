@@ -13,6 +13,7 @@ from sklearn.svm import SVC
 from tqdm import tqdm
 import numpy as np
 from lib.WrapperACO import WrapperACO
+from lib.pso import custom_pso
 
 from utilities.const import *
 
@@ -239,6 +240,16 @@ def useWrapperACO(features, labels, aco):
     print("Optimization with Ant Colony Complete")
     print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
     print(f"Ant Colony ", end=" ")
+    model, accuracy = createModel(features, labels, solution)
+    return model, accuracy, solution
+
+def useWrapperPSO(features, labels, swarm=5, iterations=10):
+    print("Starting Particle Swarm Optimization")
+    solution = custom_pso(features, labels, num_particles=swarm, num_iterations=iterations, c1=1.49618, c2=1.49618, w=0.7298, threshold=0.6)
+    solution = np.where(solution > 0.5)[0]
+    print("Optimization with Particle Swarm Complete")
+    print(f"Solution: {np.sort(solution)}")
+    print(f"Particle Swarm ", end=" ")
     model, accuracy = createModel(features, labels, solution)
     return model, accuracy, solution
 

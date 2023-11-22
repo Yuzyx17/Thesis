@@ -6,6 +6,7 @@ dataset/*
 !dataset/images
 !dataset/captured
 !dataset/segmented
+!dataset/training
 
 pipe
 apt.py

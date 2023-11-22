@@ -1,18 +1,14 @@
 import cv2, os, joblib
 
+from utilities.const import *
 from pre.segment import segment_leaf
 from utilities.util import getFeatures
-from utilities.const import *
-
-"""
-Identify tool for overall comparison
-"""
 
 model = Model.BaseModel
-disease = Disease.rbl
+disease = Disease.sbt
 classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
 test = f'{UNSEEN_PATH}/{disease.name}'
-# test = r'dataset\messenger\rbl'
+test = r'dataset\messenger\hlt'
 predictions = {
     'blb' : 0,
     'hlt' : 0,
@@ -60,4 +56,3 @@ print(f"Predictions: on \"{test}\" path with Model: {model.name} [Total: {amt}] 
 for prediction in predictions:
     curclass = predictions[prediction]
     print(f"{prediction}: {curclass} [{int(curclass/amt * 100)}%]")
-

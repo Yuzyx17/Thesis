@@ -19,18 +19,23 @@ def getGLCMFeatures(image, distance=5, angles=0, levels=256):
 
     return [contrast, dissimilarity, homogeneity, energy, correlation]
 
-
 def getHOGFeatures(image, orientations, pixels_per_cell, cells_per_block):
     
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Display the original image, LBP, and HOG features
     hog_features = hog(image, orientations=orientations, pixels_per_cell=pixels_per_cell,
                     cells_per_block=cells_per_block, feature_vector=True)
-    # -, hog_features = hog(image, orientations=orientations, pixels_per_cell=pixels_per_cell,
-    #                 cells_per_block=cells_per_block, visualize=visualize)
-    # hog_features = hog_features.flatten()
-    
+
     return hog_features
+
+def getHOGImageFeatures(image, orientations, pixels_per_cell, cells_per_block):
+    
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, hog_image = hog(image, orientations=orientations, pixels_per_cell=pixels_per_cell,
+                    cells_per_block=cells_per_block, visualize=True)
+    hog_image = hog_image.flatten()
+
+    return hog_image
 
 def getLBPFeatures(image, radius=1, points=8):
 
@@ -94,6 +99,20 @@ def getStatFeatures(image):
     stat_features = np.concatenate((mean, std))
 
     return stat_features
+
+def getColorFeatures(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)  # Convert image to LAB color space
+
+    # Split the LAB image into its components
+    L, A, B = cv2.split(image)
+
+    # Create 1D arrays for A and B channels
+    A = A.flatten()
+    B = B.flatten()
+
+    # Combine A and B channels into a single 1D array
+    ab = np.concatenate((A, B))
+    return ab
 
 def getCCVFeatures(image, num_bins=8):
     # # Apply bilateral filter
@@ -195,6 +214,7 @@ def getCCVFeatures(image, num_bins=8):
 
     # Flatten the CCV histogram
     ccv_vector = ccv_hist.flatten()
+        
     return ccv_vector
 
 def getHistFeatures(image, bins):

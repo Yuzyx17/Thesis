@@ -13,7 +13,7 @@ labels= []
 
 test = 0
 disease = Disease.blb
-index = 30
+index = 21
 
 if test:
     displayImages(
@@ -24,11 +24,12 @@ if test:
     )
 else:
     path = f'dataset/captured/{disease.value}/{index}.jpg'
-    path = r'dataset\messenger\rbl\400714226_290472176661866_605769235617517701_n.jpg'
+    path = r'dataset\messenger\hlt\400320789_7357605200929781_8806898392675796854_n.jpg'
     img = cv2.imread(path)
     
     # displayChannels(img, alpha=1.25, lower=200, mask=True)
     displayImages(
+        size=256,
         main=segment_leaf(img)
     )
 

@@ -27,7 +27,7 @@ SCALER_PATH = r'dataset\model\scalers'
 FEATURE_PATH = r'dataset\model\features'
 UNSEEN_PATH = r'dataset\images'
 DATA_PATH = r'dataset\model'
-DATASET_PATH = r'dataset\captured'
+DATASET_PATH = r'dataset\training'
 AUG_PATH = r'dataset\augmented'
 SEG_PATH = r'dataset\model'
 
@@ -46,7 +46,9 @@ class Disease(Enum):
     rbl     =   2
     sbt     =   3
 
-CLASSIFIER = SVC(C=10, kernel='rbf', probability=True)
+DISEASES = ['blb', 'hlt', 'rbl', 'sbt']
+
+CLASSIFIER = SVC(C=10, kernel='rbf')
 CORES = os.cpu_count() // 2
 CORES = CORES if CORES // 2 >= os.cpu_count() else CORES + 1
 PARAM_GRID = {
@@ -87,7 +89,7 @@ def fitness(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W, FEAT_H = 50, 50
+FEAT_W = FEAT_H = 50
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0
@@ -136,6 +138,7 @@ N_BINS = 8
 
 FEATURES = {
     'SHP-HOG' : lambda image: getHOGFeatures(image, ORIENT, PPC, CPB), 
+    'SHP-HOGIMG' : lambda image: getHOGImageFeatures(image, ORIENT, PPC, CPB), 
     'TXR-GLCM': lambda image: getGLCMFeatures(image, DISTANCE, ANGLES, LEVELS),
     'TXR-LBP' : lambda image: getLBPFeatures(image),
     'COL-HSV' : lambda image: getHSVFeatures(image),
