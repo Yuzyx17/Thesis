@@ -115,18 +115,6 @@ def getColorFeatures(image):
     return ab
 
 def getCCVFeatures(image, num_bins=8):
-    # # Apply bilateral filter
-    # coherence = cv2.bilateralFilter(image, d=9, sigmaColor=75, sigmaSpace=75)
-
-    # # Convert to grayscale
-    # coherence_gray = cv2.cvtColor(coherence, cv2.COLOR_BGR2GRAY)
-
-    # # Extract features from color coherence
-    # coherence_mean = np.mean(coherence_gray)
-    # coherence_std = np.std(coherence_gray)
-
-    # return coherence_mean, coherence_std
-
     # Convert the image to the HSV color space----
     # hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
