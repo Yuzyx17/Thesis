@@ -3,9 +3,8 @@
 __pycache__
 dataset/*
 
-!dataset/images
-!dataset/captured
 !dataset/mix and match
+!dataset/finalized
 
 reports/old reports
 

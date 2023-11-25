@@ -12,9 +12,9 @@ features= []
 labels= []
 
 test = 1
-disease = Disease.blb
-index = 21
-dataset = PHILRICE_PATH
+disease = Disease.sb
+index = 1
+dataset = CAPTURED_PATH
 if test:
     displayImages(
         blb=segment_leaf(cv2.imread(f'{dataset}/blb/{index}.jpg')),
@@ -23,15 +23,15 @@ if test:
         sb=segment_leaf(cv2.imread(f'{dataset}/sb/{index}.jpg')),
     )
 else:
-    path = f'{dataset}/{disease.value}/{index}.jpg'
-    path = r'dataset\google\hlt1.jpg'
+    path = f'{dataset}/{disease.name}/{index}.jpg'
+    # path = r'dataset\google\blb1.jpg'
     img = cv2.imread(path)
     
-    # displayChannels(img, alpha=1.25, lower=200, mask=True)
-    displayImages(
-        size=256,
-        main=segment_leaf(img)
-    )
+    displayChannels(img, alpha=1.25, lower=200, mask=True)
+    # displayImages(
+    #     size=256,
+    #     main=segment_leaf(img)
+    # )
 
 stopWait()
 

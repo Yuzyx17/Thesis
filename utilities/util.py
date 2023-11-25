@@ -31,8 +31,8 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
     c = cv2.equalizeHist(c)
     
     # a = 255-a
-    B = 255-B
-    l = 255-l
+    # B = 255-B
+    # l = 255-l
 
     l = cv2.convertScaleAbs(l, alpha=alpha)
     a = cv2.convertScaleAbs(a, alpha=alpha)
@@ -44,15 +44,15 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
     g = cv2.convertScaleAbs(g, alpha=2.5)
     c = cv2.convertScaleAbs(c, alpha=alpha)
 
-    _, l = cv2.threshold(l, lower, upper, cv2.THRESH_BINARY)
-    _, a = cv2.threshold(a, lower, upper, cv2.THRESH_BINARY)
-    _, B = cv2.threshold(B, lower, upper, cv2.THRESH_BINARY)
-    _, h = cv2.threshold(h, lower, upper, cv2.THRESH_BINARY)
-    _, s = cv2.threshold(s, lower, upper, cv2.THRESH_BINARY)
-    _, v = cv2.threshold(v, lower, upper, cv2.THRESH_BINARY)
-    _, r = cv2.threshold(r, lower, upper, cv2.THRESH_BINARY)
-    _, g = cv2.threshold(g, lower, upper, cv2.THRESH_BINARY)
-    _, c = cv2.threshold(c, lower, upper, cv2.THRESH_BINARY)
+    _, l = cv2.threshold(l, LB, upper, cv2.THRESH_BINARY)
+    _, a = cv2.threshold(a, LB, upper, cv2.THRESH_BINARY)
+    _, B = cv2.threshold(B, LB, upper, cv2.THRESH_BINARY)
+    _, h = cv2.threshold(h, LB, upper, cv2.THRESH_BINARY)
+    _, s = cv2.threshold(s, LB, upper, cv2.THRESH_BINARY)
+    _, v = cv2.threshold(v, LB, upper, cv2.THRESH_BINARY)
+    _, r = cv2.threshold(r, LB, upper, cv2.THRESH_BINARY)
+    _, g = cv2.threshold(g, LB, upper, cv2.THRESH_BINARY)
+    _, c = cv2.threshold(c, LB, upper, cv2.THRESH_BINARY)
 
     # Define the shape of the kernel (e.g., a square)
     kernel_shape = cv2.MORPH_RECT  # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
@@ -64,15 +64,20 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
     kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
     
     # Thresholding based segmentation
-    leaf = cv2.bitwise_xor(v, s)
-    leaf = cv2.bitwise_xor(leaf, g)
-    leaf = cv2.dilate(leaf, kernel, iterations=2)
+    # leaf = cv2.bitwise_xor(s, B)
+    # leaf = cv2.bitwise_xor(h, s)
+    # leaf = cv2.bitwise_not(leaf)
+    # leaf = cv2.bitwise_xor(leaf, h)
+    # leaf = cv2.bitwise_and(leaf, g)
+    # leaf = cv2.bitwise_xor(leaf, v)
+    # leaf = cv2.dilate(leaf, kernel, iterations=2)
+    # leaf = cv2.bitwise_xor(leaf, s)
     leaf = cv2.bitwise_or(s, v)
 
-    dise = cv2.bitwise_and(a, h)
-    dise = cv2.bitwise_or(dise, B)
+    dise = cv2.bitwise_or(a, h)
 
     imask = cv2.bitwise_xor(dise, leaf)
+    imask = leaf
 
     if mask:
         l = cv2.bitwise_and(image, image, mask=l)
@@ -115,6 +120,7 @@ def predictImage(image, model: Model):
 
     image = cv2.imread(image) 
     image = segment_leaf(image)
+    image = cv2.resize(image, (FEAT_W, FEAT_H))
     X = [getFeatures(image)]
     X = scaler.transform(X)
 

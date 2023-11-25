@@ -7,8 +7,8 @@ from utilities.util import getFeatures
 model = Model.BaseModel    
 disease = Disease.sb
 classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
-test = f'{UNSEEN_PATH}/{disease.name}'
-test = r'dataset\another-google'
+test = f'{VALIDATION_PATH}/{disease.name}'
+test = r'dataset\google'
 predictions = {
     'blb' : 0,
     'hlt' : 0,

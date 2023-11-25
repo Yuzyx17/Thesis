@@ -3,65 +3,35 @@ from utilities.const import *
 from pre.norm import *
 
 def segment_leaf(image):
-    border_size = 10  # Adjust the border size as needed
-    image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
-    
-    # Pre processing
     test = useWhiteBalance(image)
     test = cv2.medianBlur(test, ksize=3)
 
     hsv = cv2.cvtColor(test, cv2.COLOR_RGB2HSV)
     _, s, v = cv2.split(hsv)
-    _, g, _ = cv2.split(test)
 
     v = cv2.equalizeHist(v)
-    g = cv2.equalizeHist(g)
-    
     v = cv2.convertScaleAbs(v, alpha=1.25)
-    g = cv2.convertScaleAbs(g, alpha=1.25)
-
     _, v = cv2.threshold(v, 195, 255, cv2.THRESH_BINARY)
-    _, g = cv2.threshold(g, 195, 255, cv2.THRESH_BINARY)
 
     # Define the shape of the kernel (e.g., a square)
-    kernel_shape = cv2.MORPH_RECT  # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
+    kernel_shape = cv2.MORPH_ELLIPSE # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
 
     # Define the size of the kernel (width and height)
-    kernel_size = (5, 5)  # Adjust the size as needed
+    kernel_size = (3, 3)  # Adjust the size as needed
 
     # Create the kernel
     kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
     
     # Thresholding based segmentation
-    leaf = cv2.bitwise_xor(v, s)
-    leaf = cv2.bitwise_xor(leaf, g)
-    leaf = cv2.dilate(leaf, kernel, iterations=2)
     leaf = cv2.bitwise_or(s, v)
     mask = leaf
+    # mask = cv2.dilate(mask, kernel, iterations=6)
+    # mask = cv2.erode(mask, kernel, iterations=2)
 
-    # dise = cv2.bitwise_or(a, B)
-    # dise = cv2.bitwise_or(dise, h)
-    # mask = cv2.bitwise_or(dise, leaf)
-    # # mask = cv2.bitwise_and(mask, z)
-    # mask = cv2.bitwise_or(a, s)
-    # mask = cv2.bitwise_and(mask, v)
-    # mask = cv2.convertScaleAbs(mask, alpha=1.25)
-
-    # THresholding
-    _, mask = cv2.threshold(mask, 196, 255, cv2.THRESH_BINARY)
+    # Thresholding
+    _, mask = cv2.threshold(mask, LB, 255, cv2.THRESH_BINARY)
     mask = cv2.bitwise_and(image, image, mask=mask)
 
-    # With Canny
-    test = cv2.Canny(mask, 100, 400)
-    test = cv2.dilate(test, kernel=np.ones((3, 3), np.uint8), iterations=1)
-    # test = cv2.erode(test, kernel=np.ones((3, 3), np.uint8), iterations=1)
-    tmask = np.zeros_like(test)
-    contours, _ = cv2.findContours(test, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    largest_contour = max(contours, key=cv2.contourArea)
-    cv2.drawContours(tmask, [largest_contour], 0, 255, -1)
-    tmask = cv2.bitwise_and(image, image, mask=tmask)
-    # tmask = cv2.resize(tmask, (FEAT_W, FEAT_H))
-    # mask = cv2.resize(mask, (FEAT_W, FEAT_H)) REPLACE FEAT_W FEAT_H with size of image
     return mask
 
 def ssegment_leaf(image):
@@ -162,3 +132,65 @@ def process_image(image):
     final_image = cv2.bitwise_and(image, image, mask=mask)
 
     return final_image
+
+def ex_segment_leaf(image):
+    border_size = 10  # Adjust the border size as needed
+    image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
+    
+    # Pre processing
+    test = useWhiteBalance(image)
+    test = cv2.medianBlur(test, ksize=3)
+
+    hsv = cv2.cvtColor(test, cv2.COLOR_RGB2HSV)
+    _, s, v = cv2.split(hsv)
+    _, g, _ = cv2.split(test)
+
+    v = cv2.equalizeHist(v)
+    g = cv2.equalizeHist(g)
+    
+    v = cv2.convertScaleAbs(v, alpha=1.25)
+    g = cv2.convertScaleAbs(g, alpha=1.25)
+
+    _, v = cv2.threshold(v, 195, 255, cv2.THRESH_BINARY)
+    _, g = cv2.threshold(g, 195, 255, cv2.THRESH_BINARY)
+
+    # Define the shape of the kernel (e.g., a square)
+    kernel_shape = cv2.MORPH_RECT  # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
+
+    # Define the size of the kernel (width and height)
+    kernel_size = (5, 5)  # Adjust the size as needed
+
+    # Create the kernel
+    kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
+    
+    # Thresholding based segmentation
+    leaf = cv2.bitwise_xor(v, s)
+    leaf = cv2.bitwise_xor(leaf, g)
+    leaf = cv2.dilate(leaf, kernel, iterations=2)
+    leaf = cv2.bitwise_or(s, v)
+    mask = leaf
+
+    # dise = cv2.bitwise_or(a, B)
+    # dise = cv2.bitwise_or(dise, h)
+    # mask = cv2.bitwise_or(dise, leaf)
+    # # mask = cv2.bitwise_and(mask, z)
+    # mask = cv2.bitwise_or(a, s)
+    # mask = cv2.bitwise_and(mask, v)
+    # mask = cv2.convertScaleAbs(mask, alpha=1.25)
+
+    # THresholding
+    _, mask = cv2.threshold(mask, LB, 255, cv2.THRESH_BINARY)
+    mask = cv2.bitwise_and(image, image, mask=mask)
+
+    # With Canny
+    test = cv2.Canny(mask, 100, 400)
+    test = cv2.dilate(test, kernel=np.ones((3, 3), np.uint8), iterations=1)
+    # test = cv2.erode(test, kernel=np.ones((3, 3), np.uint8), iterations=1)
+    tmask = np.zeros_like(test)
+    contours, _ = cv2.findContours(test, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    largest_contour = max(contours, key=cv2.contourArea)
+    cv2.drawContours(tmask, [largest_contour], 0, 255, -1)
+    tmask = cv2.bitwise_and(image, image, mask=tmask)
+    # tmask = cv2.resize(tmask, (FEAT_W, FEAT_H))
+    # mask = cv2.resize(mask, (FEAT_W, FEAT_H)) REPLACE FEAT_W FEAT_H with size of image
+    return mask

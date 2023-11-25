@@ -27,10 +27,12 @@ SCALER_PATH = r'dataset\model\scalers'
 FEATURE_PATH = r'dataset\model\features'
 SEGMENTED_PATH = r'dataset\segmented'
 AUGMENTED_PATH = r'dataset\augmented'
-UNSEEN_PATH = r'dataset\images'
 DATA_PATH = r'dataset\model'
 CAPTURED_PATH = r'dataset\captured'
-TRAINING_PATH = r'dataset\training'
+NEW_PATH = r'dataset\training'
+TRAINING_PATH = r'dataset\finalized\training'
+VALIDATION_PATH = r'dataset\finalized\validation'
+TESTING_PATH = r'dataset\finalized\testing'
 UNLABLED_PATH = r'dataset\plants'
 PHILRICE_PATH = r'dataset\philrice'
 DATASET_PATH = r'dataset\mix and match\ONNO'
@@ -99,6 +101,9 @@ FEAT_W = FEAT_H = 64
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0
+
+LB = 195
+UP = 255
 
 SHARPEN_KERNEL = np.array([[-1, -1, -1],
                            [-1, 9, -1],

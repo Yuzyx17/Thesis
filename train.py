@@ -10,11 +10,12 @@ from lib.classifier import *
 from lib.WrapperACO import *
 from utilities.util import getFeatures, saveModel
 
+exec(open("extract_feature.py").read())
+
 print("Loading Features")
 X = np.load(f"{DATA_PATH}/features.npy")
 Y = np.load(f"{DATA_PATH}/labels.npy")
 print(f"Features Loaded ({X.shape})")
-
 
 # Pre process features
 scaler.fit(X)
@@ -68,13 +69,13 @@ predictions = {
         'sb' : None,
     }
 
-for class_folder in os.listdir(UNSEEN_PATH):
+for class_folder in os.listdir(VALIDATION_PATH):
     amount = 0
     correct = 0
     curclass = DISEASES.index(class_folder)
-    for image_file in os.listdir(f"{UNSEEN_PATH}/{class_folder}"):
+    for image_file in os.listdir(f"{VALIDATION_PATH}/{class_folder}"):
         amount += 1
-        image_path = os.path.join(f"{UNSEEN_PATH}/{class_folder}", image_file)
+        image_path = os.path.join(f"{VALIDATION_PATH}/{class_folder}", image_file)
         image = cv2.imread(image_path) 
         image = segment_leaf(image)
         image = cv2.resize(image, (FEAT_W, FEAT_H))
@@ -87,7 +88,7 @@ for class_folder in os.listdir(UNSEEN_PATH):
         correct += 1 if prediction == curclass else 0
     predictions[DISEASES[curclass]] = f"{(correct/amount)*100:.2f}%"
 
-log = {"Model": {"Name": model.name, "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), "Elapsed": elapsed, 'Image Size:' : f"{FEAT_W}x{FEAT_H}", "Accuracy": f"{100*accuracy:.2f}%", "Saved": "True" if save else "False",
+log = {f"Model-{len(data['logs'])+1}": {"Name": model.name, "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), "Elapsed": elapsed, 'Image Size:' : f"{FEAT_W}x{FEAT_H}", "Accuracy": f"{100*accuracy:.2f}%", "Saved": "True" if save else "False",
                 'Images': X.shape[0], "Features": subset.shape[0], 
             #  'Augmentations': [aug[0] for aug in AUGMENTATIONS], 
                 "Predictions": predictions, 

@@ -11,7 +11,7 @@ from lib.classifier import *
 from lib.WrapperACO import *
 from utilities.util import saveModel
 
-models = [Model.BaseModel, Model.AntColony]
+models = [Model.BaseModel]
 images = []
 mark = datetime.now().strftime('%Y%m%d-%H%M%S')
 # Generate Combinations of Features
@@ -31,7 +31,7 @@ if os.path.exists(f"{DATA_PATH}/images.npy"):
     images = np.load(f"{DATA_PATH}/images.npy")
     labels = np.load(f"{DATA_PATH}/labels.npy")
 else:
-    path = CAPTURED_PATH
+    path = TRAINING_PATH
     augment = True
     print("Processing Images")
     for class_folder in os.listdir(path):
@@ -60,7 +60,7 @@ else:
 
     Y = np.array(labels)
     Y = label_encoder.fit_transform(Y)
-print(f"Images: {Y.shape}")
+print(f"Images: {Y.shape[0]}")
 save = False
 
 print("Starting Exhaustive Training")
@@ -88,10 +88,10 @@ for combination in combinations:
     for model in models:
         start = time.time()
         try:
-            with open(f'{LOGS_PATH}/{model.name}/{model.name}_report-{mark}.json', 'r') as file:
+            with open(f'{LOGS_PATH}/{model.name}/{model.name}-{mark}.json', 'r') as file:
                 data = json.load(file)
         except FileNotFoundError:
-            with open(f'{LOGS_PATH}/{model.name}/{model.name}_report-{mark}.json', 'w') as file:
+            with open(f'{LOGS_PATH}/{model.name}/{model.name}-{mark}.json', 'w') as file:
                 data = {'tests': []}
                 json.dump(data, file, indent=4)
 
@@ -114,21 +114,27 @@ for combination in combinations:
         minutes, seconds = divmod(remainder, 60)
         elapsed = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
-        predictions = {
+        diseases = ['blb', 'hlt', 'rb', 'sb']
+        testing = {
             'blb' : None,
             'hlt' : None,
             'rb' : None,
             'sb' : None,
         }
-        diseases = ['blb', 'hlt', 'rb', 'sb']
+        validation = {
+            'blb' : None,
+            'hlt' : None,
+            'rb' : None,
+            'sb' : None,
+        }
 
-        for class_folder in os.listdir(UNSEEN_PATH):
+        for class_folder in os.listdir(TESTING_PATH):
             amount = 0
             correct = 0
             curclass = diseases.index(class_folder)
-            for image_file in os.listdir(f"{UNSEEN_PATH}/{class_folder}"):
+            for image_file in os.listdir(f"{TESTING_PATH}/{class_folder}"):
                 amount += 1
-                image_path = os.path.join(f"{UNSEEN_PATH}/{class_folder}", image_file)
+                image_path = os.path.join(f"{TESTING_PATH}/{class_folder}", image_file)
                 test_image = cv2.imread(image_path) 
                 test_image = segment_leaf(test_image)
                 test_image = cv2.resize(test_image, (FEAT_W, FEAT_H))
@@ -144,21 +150,54 @@ for combination in combinations:
                 prediction = classifier.predict(unseen)[0]
                 correct += 1 if prediction == curclass else 0
   
-            predictions[diseases[curclass]] = f"{(correct/amount)*100:.2f}%"
+            testing[diseases[curclass]] = f"{(correct/amount)*100:.2f}%"
 
 
-        log = {f"Model-{mark}": {"Name": model.name, "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), "Elapsed": elapsed, 'Image Size:' : f"{FEAT_W}x{FEAT_H}", "Accuracy": f"{100*accuracy:.2f}%", "Saved": "True" if save else "False",
-                 'Images': X.shape[0], "Features": {'Amount': subset.shape[0], 'Feature': combination}, 
-                #  'Augmentations': [aug[0] for aug in AUGMENTATIONS], 
-                 "Predictions": predictions, 
-                 'Additional': 'None' if model is Model.BaseModel else ({
-                     'Ants': aco.ants,
-                     'Iterations': aco.iterations,
-                     'Rho': aco.rho,
-                     'Q': aco.Q,
-                     'Alpha': aco.alpha,
-                     'Beta': aco.beta
-                 } if model is Model.AntColony else 'None')}}
+        for class_folder in os.listdir(VALIDATION_PATH):
+            amount = 0
+            correct = 0
+            curclass = diseases.index(class_folder)
+            for image_file in os.listdir(f"{VALIDATION_PATH}/{class_folder}"):
+                amount += 1
+                image_path = os.path.join(f"{VALIDATION_PATH}/{class_folder}", image_file)
+                test_image = cv2.imread(image_path) 
+                test_image = segment_leaf(test_image)
+                test_image = cv2.resize(test_image, (FEAT_W, FEAT_H))
+                img_feature = []
+                for feature in combination:
+                    img_feature.extend(FEATURES[feature](test_image))
+                img_feature = np.array(img_feature)
+                unseen = [img_feature]
+                unseen = scaler.transform(unseen)
+
+                if model is not Model.BaseModel:
+                    unseen = unseen[:,subset]
+                prediction = classifier.predict(unseen)[0]
+                correct += 1 if prediction == curclass else 0
+  
+            validation[diseases[curclass]] = f"{(correct/amount)*100:.2f}%"
+
+        log = {f"Test-{len(data['tests'])+1}": 
+               {"Name": model.name, 
+                "Date": datetime.now().strftime('%Y/%m/%d %H:%M:%S'), 
+                "Elapsed": elapsed, 
+                'Image Size:' : f"{FEAT_W}x{FEAT_H}", 
+                "Accuracy": f"{100*accuracy:.2f}%", 
+                "Saved": "True" if save else "False",
+                'Images': X.shape[0], 
+                "Features": 
+                    {'Amount': subset.shape[0], 
+                     'Feature': combination},  
+                "Testing (LB)": testing, 
+                "Validation (OL)": validation, 
+                'Additional': 'None' if model is Model.BaseModel else ({
+                    'Ants': aco.ants,
+                    'Iterations': aco.iterations,
+                    'Rho': aco.rho,
+                    'Q': aco.Q,
+                    'Alpha': aco.alpha,
+                    'Beta': aco.beta
+                } if model is Model.AntColony else 'None')}}
         
         with open(f'{LOGS_PATH}/{model.name}/{model.name}-{mark}.json', 'w+') as file:
             data['tests'].append(log)
