@@ -8,7 +8,7 @@ model = Model.BaseModel
 disease = Disease.sb
 classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
 test = f'{VALIDATION_PATH}/{disease.name}'
-test = r'dataset\google'
+test = r'dataset\another-google'
 predictions = {
     'blb' : 0,
     'hlt' : 0,
