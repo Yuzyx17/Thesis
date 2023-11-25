@@ -2,14 +2,7 @@
 .venv/share
 __pycache__
 dataset/*
-
-!dataset/mix and match
 !dataset/finalized
-dataset/finalized/segmented
-dataset/captured
-dataset/images
-dataset/segmented
-dataset/training
 
 reports/old reports
 
