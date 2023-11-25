@@ -125,6 +125,7 @@ class WrapperACO(object):
     
     def start_run(self, iterations=None):
         self.iterations = iterations if iterations is not None else self.iterations
+        print(self.__dict__['tau'])
         self.optimize()
         self.fitness = None
         joblib.dump(self, f"{DATA_PATH}/WrapperAco.pkl")
@@ -141,11 +142,11 @@ class WrapperACO(object):
         joblib.dump(self, f"{DATA_PATH}/WrapperAco.pkl")
         return self.solution, self.accuracy
 
-    def finish_run(self, fit, iterations):
+    def finish_run(self, fit, iterations=None):
         assert os.path.exists(f"{DATA_PATH}/WrapperAco.pkl"), "No WrapperACO found, start with start_run method"
         self = joblib.load(f"{DATA_PATH}/WrapperAco.pkl")
-        print(self.__dict__['tau'])
         self.fitness = fit
-        self.iterations = iterations
+        self.iterations = iterations if iterations is not None else self.iterations
         self.optimize()
+        print(self.__dict__['tau'])
         return self.solution, self.accuracy

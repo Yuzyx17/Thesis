@@ -2,6 +2,7 @@ import sys
 import cv2
 import numpy as np
 import joblib, functools
+from pre.segment import segment_leaf
 
 from utilities.const import *
 
@@ -62,9 +63,11 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
     # Create the kernel
     kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
     
-    leaf = cv2.bitwise_or(h, g)
-    leaf = cv2.bitwise_and(leaf, s)
+    # Thresholding based segmentation
+    leaf = cv2.bitwise_xor(v, s)
+    leaf = cv2.bitwise_xor(leaf, g)
     leaf = cv2.dilate(leaf, kernel, iterations=2)
+    leaf = cv2.bitwise_or(s, v)
 
     dise = cv2.bitwise_and(a, h)
     dise = cv2.bitwise_or(dise, B)
@@ -105,24 +108,24 @@ def stopWait():
     cv2.waitKey()
     cv2.destroyAllWindows()
 
-# def predictImage(image, model: Model):
-    # classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
-    # scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
-    # encoder = joblib.load(r'dataset\model\encoder.joblib')
+def predictImage(image, model: Model):
+    classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
+    scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
+    encoder = joblib.load(r'dataset\model\encoder.joblib')
 
-    # image = cv2.imread(image) 
-    # image = segment_leaf(image)
-    # X = [getFeatures(image)]
-    # X = scaler.transform(X)
+    image = cv2.imread(image) 
+    image = segment_leaf(image)
+    X = [getFeatures(image)]
+    X = scaler.transform(X)
 
-    # if model is not Model.BaseModel:
-    #     selected_features = np.load(f"{FEATURE_PATH}/{model.name}.npy")
-    #     X = X[:,selected_features]
+    if model is not Model.BaseModel:
+        selected_features = np.load(f"{FEATURE_PATH}/{model.name}.npy")
+        X = X[:,selected_features]
     
-    # prediction = classifier.predict_proba(X)
-    # print(encoder.classes_)
+    prediction = classifier.predict_proba(X)
+    print(encoder.classes_)
 
-    # return prediction
+    return prediction
 
 def saveModel(classifier, model, subset=None):
     print("Model Saving")

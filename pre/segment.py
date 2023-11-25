@@ -1,6 +1,5 @@
 import cv2
 from utilities.const import *
-from utilities.util import *
 from pre.norm import *
 
 def segment_leaf(image):
@@ -61,9 +60,61 @@ def segment_leaf(image):
     largest_contour = max(contours, key=cv2.contourArea)
     cv2.drawContours(tmask, [largest_contour], 0, 255, -1)
     tmask = cv2.bitwise_and(image, image, mask=tmask)
-    tmask = cv2.resize(tmask, (FEAT_W, FEAT_H))
-    mask = cv2.resize(mask, (FEAT_W, FEAT_H))
+    # tmask = cv2.resize(tmask, (FEAT_W, FEAT_H))
+    # mask = cv2.resize(mask, (FEAT_W, FEAT_H)) REPLACE FEAT_W FEAT_H with size of image
     return mask
+
+def ssegment_leaf(image):
+    # Canny edge detection parameters
+    lower_threshold = 15
+    upper_threshold = 150
+
+    # Mask dilation and erosion parameters
+    dilation_kernel = np.ones((3, 3), np.uint8)
+    erosion_kernel = np.ones((3, 3), np.uint8)
+
+    # Morphological iterations
+    MIdilation = 2
+    MIerosion = 2
+    # Read the image
+    image = cv2.resize(image, (300, 300))
+
+    # Apply Canny edge detection
+    edges = cv2.Canny(image, lower_threshold, upper_threshold)
+
+    # Dilation and erosion on edges
+    edges = cv2.erode(cv2.dilate(edges, dilation_kernel), erosion_kernel)
+    # Find contours in the edge image
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Check if any contours were found
+    if len(contours) == 0:
+        return np.zeros_like(edges)  # Return an empty mask if no contours are found
+    # Find the largest contour
+    largest_contour = max(contours, key=cv2.contourArea)
+
+    # Create a mask with the same size as the edges
+    mask = np.zeros_like(edges)
+
+    # Fill the largest contour
+    cv2.drawContours(mask, [largest_contour], 0, 255, thickness=cv2.FILLED)
+
+    # Apply Gaussian blur to the mask
+    mask = cv2.GaussianBlur(mask, (5, 5), 0)
+
+    # Additional iterations of dilation and erosion
+    mask = cv2.dilate(mask, None, iterations=MIdilation)
+    mask = cv2.erode(mask, None, iterations=MIerosion)
+
+    # Multiply the mask by 3
+    mask_stack = mask * 3
+
+    # Invert the result
+    # mask_stack = cv2.bitwise_not(mask)
+
+    # Apply background subtraction
+    return cv2.bitwise_and(image, image, mask=mask_stack)
+
 
 def combine_leaf_and_disease(leaf, disease):
     # Create a mask for the disease region

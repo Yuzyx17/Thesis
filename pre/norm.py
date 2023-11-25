@@ -1,7 +1,5 @@
 import cv2
 from utilities.const import *
-from utilities.util import *
-from skimage import exposure
 
 def useNormBright(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

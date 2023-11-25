@@ -253,17 +253,17 @@ def useWrapperPSO(features, labels, swarm=5, iterations=10):
     model, accuracy = createModel(features, labels, solution)
     return model, accuracy, solution
 
-def useSessionWrapperACO(aco: WrapperACO, iterations, status, features=None, labels=None):
+def useSessionWrapperACO(aco: WrapperACO, fit, iterations, status, features=None, labels=None):
     match status:
         case 0: 
             solution, quality = aco.start_run(iterations)
             print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
         case 1: 
-            solution, quality = aco.continue_run(iterations)
+            solution, quality = aco.continue_run(fit, iterations)
             print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
         case 2: 
             assert features is not None and labels is not None
-            solution, quality = aco.finish_run(iterations)
+            solution, quality = aco.finish_run(fit, iterations)
             print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
             model, accuracy = createModel(features, labels)
             return model, accuracy, solution

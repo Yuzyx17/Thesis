@@ -22,11 +22,11 @@ def getGLCMFeatures(image, distance=5, angles=0, levels=256):
 def getHOGFeatures(image, orientations, pixels_per_cell, cells_per_block):
     
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Display the original image, LBP, and HOG features
-    hog_features = hog(image, orientations=orientations, pixels_per_cell=pixels_per_cell,
-                    cells_per_block=cells_per_block, feature_vector=True)
-
+    hog_features, _ = hog(image, orientations=orientations, pixels_per_cell=pixels_per_cell,
+                    cells_per_block=cells_per_block, visualize=True)
+    # hog_image = hog_image.flatten()
     return hog_features
+    return np.concatenate((hog_features, hog_image))
 
 def getHOGImageFeatures(image, orientations, pixels_per_cell, cells_per_block):
     
@@ -37,12 +37,11 @@ def getHOGImageFeatures(image, orientations, pixels_per_cell, cells_per_block):
 
     return hog_image
 
-def getLBPFeatures(image, radius=1, points=8):
+def getLBPFeatures(image, radius, points):
 
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    n_points = points * radius
-    lbp_image = local_binary_pattern(image, n_points, radius, method='uniform')
-    feature_vector_lbp, _ = np.histogram(lbp_image.ravel(), bins=np.arange(0, n_points + 3), range=(0, n_points + 2))
+    lbp_image = local_binary_pattern(image, points, radius, method='uniform')
+    feature_vector_lbp, _ = np.histogram(lbp_image.ravel(), bins=np.arange(0, points + 3), range=(0, points + 2))
     
     return feature_vector_lbp
 
@@ -100,81 +99,7 @@ def getStatFeatures(image):
 
     return stat_features
 
-def getColorFeatures(image):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)  # Convert image to LAB color space
-
-    # Split the LAB image into its components
-    L, A, B = cv2.split(image)
-
-    # Create 1D arrays for A and B channels
-    A = A.flatten()
-    B = B.flatten()
-
-    # Combine A and B channels into a single 1D array
-    ab = np.concatenate((A, B))
-    return ab
-
-def getCCVFeatures(image, num_bins=8):
-    # Convert the image to the HSV color space----
-    # hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-    # # Split the HSV image into individual channels
-    # h, s, v = cv2.split(hsv_image)
-
-    # # Calculate the color histograms for each channel
-    # hist_h = cv2.calcHist([h], [0], None, [256], [0, 256])
-    # hist_s = cv2.calcHist([s], [0], None, [256], [0, 256])
-    # hist_v = cv2.calcHist([v], [0], None, [256], [0, 256])
-
-    # # Normalize the histograms
-    # hist_h /= hist_h.sum()
-    # hist_s /= hist_s.sum()
-    # hist_v /= hist_v.sum()
-
-    # # Calculate the color coherence features
-    # color_coherence = np.concatenate((hist_h, hist_s, hist_v), axis=None)
-
-    # # Calculate the mean and standard deviation
-    # mean = np.mean(color_coherence)
-    # std_dev = np.std(color_coherence)
-
-    # return [mean, std_dev]
-    
-    # Convert image to LAB color space--------------
-    # lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-
-    # # Initialize CCV bins for each channel (L, A, B)
-    # ccv_bins = [8, 8, 8]  # You can adjust the number of bins as needed
-
-    # # Split LAB channels
-    # channels = cv2.split(lab_image)
-
-    # # Initialize CCV histogram
-    # ccv_hist = np.zeros((ccv_bins[0], ccv_bins[1], ccv_bins[2]))
-
-    # height, width = image.shape[:2]
-
-    # for i in range(height):
-    #     for j in range(width):
-    #         # Get pixel values in LAB
-    #         pixel = lab_image[i, j]
-
-    #         # Determine bin indices for each channel
-    #         l_bin = int(pixel[0] * ccv_bins[0] / 256)
-    #         a_bin = int(pixel[1] * ccv_bins[1] / 256)
-    #         b_bin = int(pixel[2] * ccv_bins[2] / 256)
-
-    #         # Increment the corresponding bin in CCV histogram
-    #         ccv_hist[l_bin, a_bin, b_bin] += 1
-
-    # # Normalize the CCV histogram
-    # ccv_hist /= (height * width)
-
-    # # Flatten the 3D histogram into a 1D feature vector
-    # ccv_feature = ccv_hist.flatten()
-
-    # return ccv_feature  
-
+def getCCVFeatures(image, num_bins):
     # Convert the image to Lab color space
     lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2Lab)
 
@@ -205,41 +130,90 @@ def getCCVFeatures(image, num_bins=8):
         
     return ccv_vector
 
-def getHistFeatures(image, bins):
-    # Convert the image to grayscale
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# def getColHistFeatures(image):
+#     # Convert the image to RGB, HSV, and LAB color spaces
+#     rgb_image = image
+#     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+#     lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
 
-    # Compute histogram
-    hist, _ = np.histogram(gray_image.flatten(), bins=bins, range=[0, 256])
+#     # Initialize histograms
+#     rgb_hist = []
+#     hsv_hist = []
+#     lab_hist = []
 
-    # Add a small constant to avoid division by zero or invalid multiplication
-    epsilon = 1e-10
-    hist_normalized = (hist / np.sum(hist)) + epsilon
+#     # Compute histograms for each channel in each color space
+#     for i in range(3):  # Loop over channels (R, G, B)
+#         rgb_hist_channel, _ = np.histogram(rgb_image[:, :, i].ravel(), bins=256, range=(0, 256), density=True)
+#         hsv_hist_channel, _ = np.histogram(hsv_image[:, :, i].ravel(), bins=256, range=(0, 1), density=True)
+#         lab_hist_channel, _ = np.histogram(lab_image[:, :, i].ravel(), bins=256, range=(-128, 128), density=True)
 
-    # Extract features from histogram
-    hist_mean = np.mean(hist_normalized)
-    hist_std = np.std(hist_normalized)
-    hist_entropy = -np.sum(hist_normalized * np.log2(hist_normalized))
+#         rgb_hist.extend(rgb_hist_channel)
+#         hsv_hist.extend(hsv_hist_channel)
+#         lab_hist.extend(lab_hist_channel)
 
-    return [hist_mean, hist_std, hist_entropy]
+#     return np.concatenate((rgb_hist, hsv_hist, lab_hist))
 
-def getColHistFeatures(image, num_bins, channels, ranges):
+# def getHistFeatures(image, bins):
+#     # Convert the image to grayscale
+#     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+#     # Compute histogram
+#     hist, _ = np.histogram(gray_image.flatten(), bins=bins, range=[0, 256])
+
+#     # Add a small constant to avoid division by zero or invalid multiplication
+#     epsilon = 1e-10
+#     hist_normalized = (hist / np.sum(hist)) + epsilon
+
+#     # Extract features from histogram
+#     hist_mean = np.mean(hist_normalized)
+#     hist_std = np.std(hist_normalized)
+#     hist_entropy = -np.sum(hist_normalized * np.log2(hist_normalized))
+
+#     return [hist_mean, hist_std, hist_entropy]
+
+# def getCCVFeatures(image, num_bins=8):
+    # # Convert the image to the HSV color space----
+    # hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    # # Split the HSV image into individual channels
+    # h, s, v = cv2.split(hsv_image)
+
+    # # Calculate the color histograms for each channel
+    # hist_h = cv2.calcHist([h], [0], None, [256], [0, 256])
+    # hist_s = cv2.calcHist([s], [0], None, [256], [0, 256])
+    # hist_v = cv2.calcHist([v], [0], None, [256], [0, 256])
+
+    # # Normalize the histograms
+    # hist_h /= hist_h.sum()
+    # hist_s /= hist_s.sum()
+    # hist_v /= hist_v.sum()
+
+    # # Calculate the color coherence features
+    # color_coherence = np.concatenate((hist_h, hist_s, hist_v), axis=None)
+
+    # # Calculate the mean and standard deviation
+    # mean = np.mean(color_coherence)
+    # std_dev = np.std(color_coherence)
+
+    # return [mean, std_dev]
+
+def getColHistFeatures(image, channels=(0, 1, 2), num_bins=256):
     hist_features = []
 
     for channel in channels:
-        channel_hist = cv2.calcHist([image], [channel], None, [num_bins], ranges=ranges)
+        channel_hist = cv2.calcHist([image], [channel], None, [num_bins], ranges=(0, 256))
         channel_hist = channel_hist.flatten()
         hist_features.extend(channel_hist)
     
     lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
     for channel in channels:
-        channel_hist = cv2.calcHist([lab_image], [channel], None, [num_bins], ranges=ranges)
+        channel_hist = cv2.calcHist([lab_image], [channel], None, [num_bins], ranges=(-128, 128))
         channel_hist = channel_hist.flatten()
         hist_features.extend(channel_hist)
 
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     for channel in channels:
-        channel_hist = cv2.calcHist([hsv_image], [channel], None, [num_bins], ranges=ranges)
+        channel_hist = cv2.calcHist([hsv_image], [channel], None, [num_bins], ranges=(0, 1))
         channel_hist = channel_hist.flatten()
         hist_features.extend(channel_hist)
         

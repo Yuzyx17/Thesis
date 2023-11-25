@@ -4,10 +4,11 @@ import numpy as np
 import numpy.typing as npt
 
 from typing import List
-from utilities.util import predictImage
+from lib.classifier import useSessionWrapperACO
 from utilities.const import *
 
 from lib.WrapperACO import WrapperACO
+from utilities.util import predictImage
 
 
 n = 5
@@ -107,13 +108,12 @@ def explore(features, labels):
 # fit = lambda subset: fitness(X, Y, subset)
 
 # aco = WrapperACO(fit, features.shape[1], ants=3, iterations=5, debug=1)
-# aco.start_run(1)
-# aco.continue_run(fit, 1)
-# aco.continue_run(fit, 1)
-# aco.continue_run(fit, 1)
-# aco.finish_run(fit, 1)
+# useSessionWrapperACO(aco, fit, 1, 0, X, Y)
+# useSessionWrapperACO(aco, fit, 1, 1, X, Y)
+# useSessionWrapperACO(aco, fit, 1, 1, X, Y)
+# useSessionWrapperACO(aco, fit, 1, 2, X, Y)
 
 
-prediction = predictImage(r"dataset\images\hlt\shape 10 .jpg", Model.BaseModel)
+prediction = predictImage(r"dataset\google\hlt2.jpg", Model.BaseModel)
 print(DISEASES, f'\n', np.round(prediction, 2))
 print(DISEASES[np.argmax(prediction[0])])

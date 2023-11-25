@@ -1,0 +1,42 @@
+{
+    "logs": [
+        {
+            "Model": {
+                "Name": "BaseModel",
+                "Date": "2023/11/25 11:05:28",
+                "Elapsed": "00:00:41",
+                "Image Size:": "64x64",
+                "Accuracy": "95.49%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "63.83%",
+                    "hlt": "98.00%",
+                    "rb": "46.81%",
+                    "sb": "88.24%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Model": {
+                "Name": "BaseModel",
+                "Date": "2023/11/25 11:06:27",
+                "Elapsed": "00:00:37",
+                "Image Size:": "64x64",
+                "Accuracy": "95.49%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "63.83%",
+                    "hlt": "98.00%",
+                    "rb": "46.81%",
+                    "sb": "88.24%"
+                },
+                "Additional": "None"
+            }
+        }
+    ]
+}

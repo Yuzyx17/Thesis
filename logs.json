@@ -1,745 +1,152 @@
 {
     "Model": {
         "Name": "BaseModel",
-        "Date": "2023/11/21 17:37:24",
-        "Elapsed": "00:00:04",
-        "Accuracy": "67.71%",
+        "Date": "2023/11/23 17:02:58",
+        "Elapsed": "00:00:41",
+        "Image Size:": "64x64",
+        "Accuracy": "93.06%",
         "Saved": "True",
-        "Features": {
-            "Amount": 625,
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
+        "Images": 1440,
+        "Features": 7463,
+        "Predictions": {
+            "blb": "76.60%",
+            "hlt": "0.00%",
+            "rbl": "23.40%",
+            "sbt": "100.00%"
         },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
+        "Additional": "None"
     }
 }
 {
     "Model": {
         "Name": "BaseModel",
-        "Date": "2023/11/21 17:40:54",
-        "Elapsed": "00:00:33",
-        "Accuracy": "90.97%",
+        "Date": "2023/11/23 17:29:34",
+        "Elapsed": "00:00:40",
+        "Image Size:": "64x64",
+        "Accuracy": "93.06%",
         "Saved": "True",
-        "Features": {
-            "Amount": 3297,
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
+        "Images": 1440,
+        "Features": 7463,
+        "Predictions": {
+            "blb": "76.60%",
+            "hlt": "6.00%",
+            "rbl": "23.40%",
+            "sbt": "100.00%"
         },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
+        "Additional": "None"
     }
 }
 {
     "Model": {
         "Name": "BaseModel",
-        "Date": "2023/11/21 20:44:20",
-        "Elapsed": "00:00:14",
-        "Accuracy": "83.33%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                940
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 20:51:11",
-        "Elapsed": "00:01:01",
-        "Accuracy": "94.44%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3244
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 22:23:09",
-        "Elapsed": "00:00:32",
-        "Accuracy": "94.44%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3244
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 23:30:35",
-        "Elapsed": "00:00:30",
-        "Accuracy": "94.79%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3245
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 23:42:57",
-        "Elapsed": "00:00:53",
-        "Accuracy": "94.10%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3755
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 23:47:57",
-        "Elapsed": "00:00:45",
-        "Accuracy": "94.10%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3749
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 23:54:37",
-        "Elapsed": "00:00:42",
-        "Accuracy": "94.10%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3755
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/21 23:59:41",
-        "Elapsed": "00:00:52",
-        "Accuracy": "94.10%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3758
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "AntColony",
-        "Date": "2023/11/22 10:25:08",
-        "Elapsed": "00:11:32",
-        "Accuracy": "96.18%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                1514
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/22 10:40:26",
-        "Elapsed": "00:00:48",
-        "Accuracy": "94.79%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3248
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/22 10:47:43",
-        "Elapsed": "00:01:18",
-        "Accuracy": "94.10%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                5358
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/22 10:59:45",
-        "Elapsed": "00:01:42",
+        "Date": "2023/11/23 17:50:48",
+        "Elapsed": "00:00:21",
+        "Image Size:": "100x100",
         "Accuracy": "95.49%",
         "Saved": "True",
-        "Features": {
-            "Amount": [
-                6258
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
+        "Images": 1440,
+        "Features": 4007,
+        "Predictions": {
+            "blb": "55.32%",
+            "hlt": "6.00%",
+            "rb": "91.49%",
+            "sb": "100.00%"
         },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
+        "Additional": "None"
     }
 }
 {
     "Model": {
         "Name": "BaseModel",
-        "Date": "2023/11/22 11:59:18",
-        "Elapsed": "00:19:52",
-        "Accuracy": "94.44%",
+        "Date": "2023/11/23 18:23:54",
+        "Elapsed": "00:00:41",
+        "Image Size:": "64x64",
+        "Accuracy": "93.06%",
         "Saved": "True",
-        "Features": {
-            "Amount": [
-                11258
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
+        "Images": 1440,
+        "Features": 7463,
+        "Predictions": {
+            "blb": "76.60%",
+            "hlt": "6.00%",
+            "rb": "23.40%",
+            "sb": "100.00%"
         },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
+        "Additional": "None"
     }
 }
 {
     "Model": {
         "Name": "BaseModel",
-        "Date": "2023/11/22 12:41:48",
+        "Date": "2023/11/23 21:01:52",
+        "Elapsed": "00:00:36",
+        "Image Size:": "64x64",
+        "Accuracy": "96.53%",
+        "Saved": "True",
+        "Images": 1440,
+        "Features": 7463,
+        "Predictions": {
+            "blb": "68.09%",
+            "hlt": "100.00%",
+            "rb": "68.09%",
+            "sb": "88.24%"
+        },
+        "Additional": "None"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/23 22:20:54",
+        "Elapsed": "00:00:29",
+        "Image Size:": "128x128",
+        "Accuracy": "94.79%",
+        "Saved": "True",
+        "Images": 1440,
+        "Features": 4903,
+        "Predictions": {
+            "blb": "57.45%",
+            "hlt": "98.00%",
+            "rb": "97.87%",
+            "sb": "94.12%"
+        },
+        "Additional": "None"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/23 22:48:03",
+        "Elapsed": "00:16:42",
+        "Image Size:": "80x80",
+        "Accuracy": "93.06%",
+        "Saved": "True",
+        "Images": 1440,
+        "Features": 10055,
+        "Predictions": {
+            "blb": "42.55%",
+            "hlt": "98.00%",
+            "rb": "53.19%",
+            "sb": "94.12%"
+        },
+        "Additional": "None"
+    }
+}
+{
+    "Model": {
+        "Name": "BaseModel",
+        "Date": "2023/11/23 22:56:20",
         "Elapsed": "00:00:23",
-        "Accuracy": "94.10%",
+        "Image Size:": "32x32",
+        "Accuracy": "96.53%",
         "Saved": "True",
-        "Features": {
-            "Amount": [
-                5358
-            ],
-            "Feature": [
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
+        "Images": 1440,
+        "Features": 4007,
+        "Predictions": {
+            "blb": "55.32%",
+            "hlt": "100.00%",
+            "rb": "70.21%",
+            "sb": "94.12%"
         },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/22 12:44:23",
-        "Elapsed": "00:00:28",
-        "Accuracy": "95.49%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                6258
-            ],
-            "Feature": [
-                "S",
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
-    }
-}
-{
-    "Model": {
-        "Name": "BaseModel",
-        "Date": "2023/11/22 13:05:13",
-        "Elapsed": "00:17:02",
-        "Accuracy": "95.49%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                17214
-            ],
-            "Feature": [
-                "S",
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "100x100"
-    }
-}
-{
-    "Model": {
-        "Name": "ParticleSwarm",
-        "Date": "2023/11/22 18:57:49",
-        "Elapsed": "00:00:57",
-        "Accuracy": "94.44%",
-        "Saved": "True",
-        "Features": {
-            "Amount": [
-                3099
-            ],
-            "Feature": [
-                "S",
-                "S",
-                "T",
-                "T",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C",
-                "C"
-            ]
-        },
-        "Augmentations": [
-            "H_FLIP",
-            "V_FLIP",
-            "ROT90C",
-            "ROT180",
-            "ROT90O",
-            "CONINC",
-            "CONDEC",
-            "BR_INC",
-            "BR_DEC",
-            "IMBLUR",
-            "SHARPN"
-        ],
-        "Image Size:": "50x50"
+        "Additional": "None"
     }
 }

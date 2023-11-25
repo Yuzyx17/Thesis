@@ -4,20 +4,20 @@ from utilities.const import *
 from pre.segment import segment_leaf
 from utilities.util import getFeatures
 
-model = Model.BaseModel
-disease = Disease.sbt
+model = Model.BaseModel    
+disease = Disease.sb
 classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
 test = f'{UNSEEN_PATH}/{disease.name}'
-test = r'dataset\messenger\hlt'
+test = r'dataset\another-google'
 predictions = {
     'blb' : 0,
     'hlt' : 0,
-    'rbl' : 0,
-    'sbt' : 0,
+    'rb' : 0,
+    'sb' : 0,
 }
 
 amt = 0
-per_image = 0
+per_image =1
 print("Predicting New Images")
 scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
 # Loop through the images in the class folder
@@ -26,6 +26,7 @@ for image_file in os.listdir(test):
     image_path = os.path.join(test, image_file)
     image = cv2.imread(image_path) 
     image = segment_leaf(image)
+    image = cv2.resize(image, (FEAT_W, FEAT_H))
     X = [getFeatures(image)]
     
     X = scaler.transform(X)
@@ -43,11 +44,11 @@ for image_file in os.listdir(test):
             predictions['hlt'] += 1
             prediction = 'hlt'
          case 2: 
-            predictions['rbl'] += 1
-            prediction = 'rbl'
+            predictions['rb'] += 1
+            prediction = 'rb'
          case 3: 
-            predictions['sbt'] += 1
-            prediction = 'sbt'
+            predictions['sb'] += 1
+            prediction = 'sb'
 
     if per_image:
         print(f"Image: {image_file} | Prediction: {prediction}")

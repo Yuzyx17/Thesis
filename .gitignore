@@ -5,8 +5,9 @@ dataset/*
 
 !dataset/images
 !dataset/captured
-!dataset/segmented
-!dataset/training
+!dataset/mix and match
+
+reports/old reports
 
 pipe
 apt.py

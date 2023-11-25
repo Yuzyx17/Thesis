@@ -25,11 +25,17 @@ INITIAL PAThS
 MODEL_PATH = r'dataset\model\models'
 SCALER_PATH = r'dataset\model\scalers'
 FEATURE_PATH = r'dataset\model\features'
+SEGMENTED_PATH = r'dataset\segmented'
+AUGMENTED_PATH = r'dataset\augmented'
 UNSEEN_PATH = r'dataset\images'
 DATA_PATH = r'dataset\model'
-DATASET_PATH = r'dataset\training'
-AUG_PATH = r'dataset\augmented'
+CAPTURED_PATH = r'dataset\captured'
+TRAINING_PATH = r'dataset\training'
+UNLABLED_PATH = r'dataset\plants'
+PHILRICE_PATH = r'dataset\philrice'
+DATASET_PATH = r'dataset\mix and match\ONNO'
 SEG_PATH = r'dataset\model'
+LOGS_PATH = r'reports'
 
 """
 GENERAL CONSTANTS
@@ -43,12 +49,12 @@ class Model(Enum):
 class Disease(Enum):
     blb     =   0
     hlt     =   1
-    rbl     =   2
-    sbt     =   3
+    rb     =   2
+    sb     =   3
 
-DISEASES = ['blb', 'hlt', 'rbl', 'sbt']
+DISEASES = ['blb', 'hlt', 'rb', 'sb']
 
-CLASSIFIER = SVC(C=10, kernel='rbf')
+CLASSIFIER = SVC(C=10, kernel='rbf', probability=True)
 CORES = os.cpu_count() // 2
 CORES = CORES if CORES // 2 >= os.cpu_count() else CORES + 1
 PARAM_GRID = {
@@ -89,7 +95,7 @@ def fitness(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W = FEAT_H = 50
+FEAT_W = FEAT_H = 64
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0
@@ -116,8 +122,8 @@ FOR FEATURE EXTRACTION
 """
 # HOG (SHAPE) FEATURES
 PPC = (8, 8)
-CPB = (2, 2)
-ORIENT = 9
+CPB = (1, 1)
+ORIENT = 8
 
 # LBP (TEXTURE) FEATURES
 RADIUS = 1
@@ -128,25 +134,19 @@ DISTANCE = 1
 ANGLES = 0
 LEVELS = 256
 
-# COLOR HISTOGRAM FEATURES
-BINS = 256
-CHANNELS = (0, 1, 2)
-RANGES = (0, 256)
-
 # COLOR COHERANCE FEATURES
 N_BINS = 8
 
 FEATURES = {
     'SHP-HOG' : lambda image: getHOGFeatures(image, ORIENT, PPC, CPB), 
-    'SHP-HOGIMG' : lambda image: getHOGImageFeatures(image, ORIENT, PPC, CPB), 
+    'IMG-HOG' : lambda image: getHOGImageFeatures(image, ORIENT, PPC, CPB), 
     'TXR-GLCM': lambda image: getGLCMFeatures(image, DISTANCE, ANGLES, LEVELS),
-    'TXR-LBP' : lambda image: getLBPFeatures(image),
+    'TXR-LBP' : lambda image: getLBPFeatures(image, RADIUS, POINTS),
     'COL-HSV' : lambda image: getHSVFeatures(image),
     'COL-LAB' : lambda image: getLABFeatures(image),
     'COL-RGB' : lambda image: getRGBFeatures(image),
     'COL-STAT' : lambda image: getStatFeatures(image),
-    'COL-COLHIST': lambda image: getColHistFeatures(image, BINS, CHANNELS, RANGES),
-    'COL-HIST': lambda image: getHistFeatures(image, BINS),
+    'COL-COLHIST': lambda image: getColHistFeatures(image),
     'COL-CCV': lambda image: getCCVFeatures(image, N_BINS)
 }
 
