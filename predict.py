@@ -5,10 +5,10 @@ from pre.segment import segment_leaf
 from utilities.util import getFeatures
 
 model = Model.BaseModel    
-disease = Disease.sb
+disease = Disease.blb
 classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
 test = f'{VALIDATION_PATH}/{disease.name}'
-test = r'dataset\another-google'
+# test = r'dataset\another-google'
 predictions = {
     'blb' : 0,
     'hlt' : 0,
@@ -17,7 +17,7 @@ predictions = {
 }
 
 amt = 0
-per_image =1
+per_image = 0
 print("Predicting New Images")
 scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
 # Loop through the images in the class folder
