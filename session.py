@@ -114,56 +114,6 @@ def explore(features, labels):
 # useSessionWrapperACO(aco, fit, 1, 1, X, Y)
 # useSessionWrapperACO(aco, fit, 1, 2, X, Y)
 
-
 # prediction = predictImage(r"dataset\google\blb3.jpg", Model.BaseModel)
 # print(np.round(prediction, 2))
 # print(DISEASES[np.argmax(prediction[0])])
-path = r'dataset\google\blb1.jpg'
-image = cv2.imread(r'dataset\philrice\blb\1.jpg')
-border_size = 10  # Adjust the border size as needed
-image = cv2.copyMakeBorder(image, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=0)
-
-# Pre processing
-test = useWhiteBalance(image)
-test = cv2.medianBlur(test, ksize=3)
-
-hsv = cv2.cvtColor(test, cv2.COLOR_BGR2HSV)
-lab = cv2.cvtColor(test, cv2.COLOR_BGR2LAB)
-l, _, _ = cv2.split(lab)
-_, s, v = cv2.split(hsv)
-_, g, _ = cv2.split(test)
-
-l = cv2.equalizeHist(l)
-v = cv2.equalizeHist(v)
-g = cv2.equalizeHist(g)
-
-l = cv2.convertScaleAbs(l, alpha=1.25)
-v = cv2.convertScaleAbs(v, alpha=1.25)
-g = cv2.convertScaleAbs(g, alpha=1.25)
-
-_, l = cv2.threshold(l, 195, 255, cv2.THRESH_BINARY)
-_, v = cv2.threshold(v, 195, 255, cv2.THRESH_BINARY)
-_, g = cv2.threshold(g, 195, 255, cv2.THRESH_BINARY)
-
-# Define the shape of the kernel (e.g., a square)
-kernel_shape = cv2.MORPH_ELLIPSE # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
-
-# Define the size of the kernel (width and height)
-kernel_size = (5, 5)  # Adjust the size as needed
-
-# Create the kernel
-kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
-
-
-# Create an all-white image of the same size
-leaf = cv2.bitwise_or(s, v)
-leaf = cv2.erode(leaf, kernel, iterations=3)
-leaf = cv2.dilate(leaf, kernel, iterations=1)
-mask = leaf
-
-_, mask = cv2.threshold(mask, LB, 255, cv2.THRESH_BINARY)
-mask = cv2.bitwise_and(image, image, mask=mask)
-mask = cv2.resize(mask, (300, 300))
-
-cv2.imshow("leaf", mask)
-cv2.waitKeyEx()

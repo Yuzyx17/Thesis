@@ -18,6 +18,101 @@
                 },
                 "Additional": "None"
             }
+        },
+        {
+            "Model-2": {
+                "Name": "BaseModel",
+                "Date": "2023/11/27 11:24:32",
+                "Elapsed": "00:00:58",
+                "Image Size:": "64x64",
+                "Accuracy": "95.83%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "82.61%",
+                    "hlt": "98.00%",
+                    "rb": "10.64%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Model-3": {
+                "Name": "BaseModel",
+                "Date": "2023/11/27 11:27:32",
+                "Elapsed": "00:01:07",
+                "Image Size:": "64x64",
+                "Accuracy": "95.83%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "82.61%",
+                    "hlt": "98.00%",
+                    "rb": "10.64%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Model-4": {
+                "Name": "BaseModel",
+                "Date": "2023/11/27 11:34:09",
+                "Elapsed": "00:00:47",
+                "Image Size:": "64x64",
+                "Accuracy": "95.83%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "82.61%",
+                    "hlt": "98.00%",
+                    "rb": "10.64%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Model-5": {
+                "Name": "BaseModel",
+                "Date": "2023/11/27 13:03:52",
+                "Elapsed": "00:00:44",
+                "Image Size:": "64x64",
+                "Accuracy": "97.22%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "78.26%",
+                    "hlt": "100.00%",
+                    "rb": "10.64%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Model-6": {
+                "Name": "BaseModel",
+                "Date": "2023/11/27 13:05:43",
+                "Elapsed": "00:00:43",
+                "Image Size:": "64x64",
+                "Accuracy": "94.10%",
+                "Saved": "True",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions": {
+                    "blb": "78.26%",
+                    "hlt": "98.00%",
+                    "rb": "23.40%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
         }
     ]
 }

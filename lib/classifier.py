@@ -1,3 +1,4 @@
+import json
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
@@ -13,9 +14,10 @@ from sklearn.svm import SVC
 from tqdm import tqdm
 import numpy as np
 from lib.WrapperACO import WrapperACO
-from lib.pso import custom_pso
+from lib.WrapperPSO import WrapperPSO
 
 from utilities.const import *
+from utilities.util import saveModel
 
 def BaseModel(features, labels):
     # Split the data into training and testing sets
@@ -225,6 +227,7 @@ def createModel(features, labels, selectedFeatures=None):
 
     Y_pred = svm.predict(X_test)
     report = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, zero_division='warn')
+    jsonreport = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, output_dict=True)
     overall_accuracy = accuracy_score(Y_test, Y_pred)
 
     print("Classification Report:")
@@ -232,9 +235,18 @@ def createModel(features, labels, selectedFeatures=None):
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
     print(f"Features: {features.shape[1]}")
 
+    with open(f'{LOGS_PATH}/ClassReports.json', 'r+') as file:
+        try: data = json.load(file)
+        except json.decoder.JSONDecodeError: data = {'reports':[]}
+
+        data['reports'].append({len(data['reports'])+1:jsonreport})
+        file.seek(0)
+        json.dump(data, file, indent=4)
+        file.truncate()
+        
     return svm, overall_accuracy
 
-def useWrapperACO(features, labels, aco):
+def useWrapperACO(features, labels, aco: WrapperACO):
     print("Starting Ant Colony Optimization")
     solution, quality = aco.optimize()
     print("Optimization with Ant Colony Complete")
@@ -243,10 +255,9 @@ def useWrapperACO(features, labels, aco):
     model, accuracy = createModel(features, labels, solution)
     return model, accuracy, solution
 
-def useWrapperPSO(features, labels, swarm=5, iterations=10):
+def useWrapperPSO(features, labels, pso: WrapperPSO):
     print("Starting Particle Swarm Optimization")
-    solution = custom_pso(features, labels, num_particles=swarm, num_iterations=iterations, c1=1.49618, c2=1.49618, w=0.7298, threshold=0.6)
-    solution = np.where(solution > 0.5)[0]
+    solution = pso.optimize()
     print("Optimization with Particle Swarm Complete")
     print(f"Solution: {np.sort(solution)}")
     print(f"Particle Swarm ", end=" ")
@@ -266,4 +277,4 @@ def useSessionWrapperACO(aco: WrapperACO, fit, iterations, status, features=None
             solution, quality = aco.finish_run(fit, iterations)
             print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
             model, accuracy = createModel(features, labels)
-            return model, accuracy, solution
+            saveModel(model, Model.AntColony, solution)

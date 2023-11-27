@@ -31,8 +31,8 @@ if os.path.exists(f"{DATA_PATH}/images.npy"):
     images = np.load(f"{DATA_PATH}/images.npy")
     labels = np.load(f"{DATA_PATH}/labels.npy")
 else:
-    path = TRAINING_PATH
-    augment = True
+    path = AUGMENTED_PATH
+    augment = False
     print("Processing Images")
     for class_folder in os.listdir(path):
         class_label = class_folder
@@ -45,7 +45,7 @@ else:
             image_path = os.path.join(class_path, image_file)
             image = cv2.imread(image_path) 
             # if path is not SEGMENTED_PATH and path is not AUGMENTED_PATH:
-            image = segment_leaf(image)
+            # image = segment_leaf(image)
             image = cv2.resize(image, (FEAT_W, FEAT_H))
             images.append(image)
             labels.append(class_label)

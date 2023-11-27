@@ -70,10 +70,10 @@ PARAM_GRID = {
     'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
     # 'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
-FOLDS = 1 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
-SHUFFLE = False # False to ensure replicability over all models
+FOLDS = 3 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
+SHUFFLE = True # False to ensure replicability over all models
 
-R_STATE = 42 # Select Random State to ensure replicablity
+R_STATE = None # Select Random State to ensure replicablity
 TEST_SIZE = 0.2 #  Percentage of test size
 """
 OBJECTIVE FUNCTION
@@ -93,6 +93,26 @@ def fitness(features, labels, subset):
         accuracy = accuracy_score(y_test, y_pred)
 
     return accuracy
+
+def fitness_pso(features, labels, subset):
+
+    if np.sum(subset) == 0:
+        score = 1.0 
+    selected_features = features[:, subset]
+
+    if FOLDS > 1:
+        kfold = KFold(n_splits=FOLDS, shuffle=SHUFFLE, random_state=R_STATE)
+        scores = cross_val_score(CLASSIFIER, selected_features, labels, cv=kfold)
+        accuracy = scores.mean()
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(selected_features, labels, test_size=TEST_SIZE, random_state=R_STATE)
+        CLASSIFIER.fit(X_train, y_train)
+        y_pred = CLASSIFIER.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+
+    score = 1.0 - accuracy
+    return score, selected_features
+
 """
 FOR PRE-PROCESSING
 """
