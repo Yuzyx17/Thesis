@@ -68,7 +68,7 @@ PARAM_GRID = {
     'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
     # 'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
-FOLDS = 2 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
+FOLDS = 3 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
 SHUFFLE = True # False to ensure replicability over all models
 
 R_STATE = None # Select Random State to ensure replicablity
@@ -82,10 +82,10 @@ def fitness_cv(features, labels, subset):
     selected_features = features[:, subset]
 
     scores = []
-    scaler = StandardScaler()
 
     kfold = KFold(n_splits=FOLDS, shuffle=SHUFFLE, random_state=R_STATE)
     for train_index, test_index in kfold.split(selected_features):
+        scaler = StandardScaler()
         svm = SVC(C=10, kernel='rbf', probability=True)
         X_train, X_test = selected_features[train_index], selected_features[test_index]
         Y_train, Y_test = labels[train_index], labels[test_index]
@@ -136,7 +136,7 @@ def fitness_pso(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W = FEAT_H = 32
+FEAT_W = FEAT_H = 50
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0

@@ -16,6 +16,7 @@ output_path = r'dataset\finalized\experimental'
 save = False
 augment = True if path is CAPTURED_PATH or path is PHILRICE_PATH else False
 augment = True
+pre = True
 # Loop through the class folders
 for class_folder in os.listdir(path):
     class_label = class_folder
@@ -31,22 +32,24 @@ for class_folder in os.listdir(path):
         seg_image = segment_leaf(image)
 
         if save:
-            cv2.imwrite(os.path.join(output_path, class_folder, image_file), image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+            cv2.imwrite(os.path.join(output_path, class_folder, image_file), seg_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
         seg_image = cv2.resize(seg_image, (FEAT_W, FEAT_H))
+        
         features.append(getFeatures(seg_image))
         labels.append(class_label)
 
         if augment:
             for augmentation_name, augmentation_fn in AUGMENTATIONS:
-                aug_image = augmentation_fn(image)
-                seg_aug_image = segment_leaf(aug_image)
+                aug_image = augmentation_fn(image if pre else seg_image)
+                if pre:
+                    aug_image = segment_leaf(aug_image)
+                    aug_image = cv2.resize(aug_image, (FEAT_W, FEAT_H))
 
                 if save:
-                    cv2.imwrite(os.path.join(output_path, class_folder, f"{augmentation_name}-{image_file}"), seg_aug_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+                    cv2.imwrite(os.path.join(output_path, class_folder, f"{augmentation_name}-{image_file}"), aug_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
-                seg_aug_image = cv2.resize(image, (FEAT_W, FEAT_H))
-                features.append(getFeatures(seg_aug_image))
+                features.append(getFeatures(aug_image))
                 labels.append(class_label)
 
 features = np.array(features)

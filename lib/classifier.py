@@ -249,7 +249,7 @@ def createModel(features, labels, selectedFeatures=None):
         
     return svm, overall_accuracy
 
-def useWrapperACO(features, labels, aco: WrapperACO):
+def useWrapperACO(aco: WrapperACO):
     print("Starting Ant Colony Optimization")
     solution, quality = aco.optimize()
     print("Optimization with Ant Colony Complete")

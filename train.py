@@ -11,7 +11,7 @@ from lib.WrapperACO import *
 from lib.WrapperPSO import WrapperPSO
 from utilities.util import getFeatures, saveModel
 
-# exec(open("extract_feature.py").read())
+exec(open("extract_feature.py").read())
 scaler = StandardScaler()
 
 print("Loading Features")
@@ -19,7 +19,7 @@ X = np.load(f"{DATA_PATH}/features.npy")
 Y = np.load(f"{DATA_PATH}/labels.npy")
 Y = label_encoder.fit_transform(Y)
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=R_STATE)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=42)
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
@@ -31,13 +31,13 @@ print(f"Features Loaded {X.shape}")
 def fitness_function(subset): return fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
 def fitness_pso_function(subset): return fitness_pso(X, Y, subset)
 
-save = False
-model = Model.AntColony
+save = True
+model = Model.BaseModel
 subset = np.arange(0, X_train.shape[1])
-accuracy = 0
+fit_accuracy = 0
 if model is not Model.BaseModel:
-    accuracy = fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
-    print(f"Initial: {subset.shape[0]}: {accuracy}")
+    fit_accuracy = fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
+    print(f"Initial: {subset.shape[0]}: {fit_accuracy}")
 
 try:
     with open(f'{LOGS_PATH}/logs.json', 'r') as file:
@@ -54,8 +54,8 @@ match model:
         classifier, accuracy = createModel(X_split, Y_split)
     case Model.AntColony:
         aco = WrapperACO(fitness_function,
-                         X_train.shape[1], ants=2, iterations=5, rho=0.1, Q=.75, debug=1, accuracy=accuracy, parrallel=True)
-        solution = useWrapperACO(X, Y, aco)
+                         X_train.shape[1], ants=5, iterations=5, rho=0.1, Q=.75, debug=1, accuracy=fit_accuracy, parrallel=True)
+        solution = useWrapperACO(aco)
         classifier, accuracy, = createModel(X_split, Y_split, solution)
     case Model.ParticleSwarm:
         pso = WrapperPSO(fitness_pso_function, X.shape[1], particles=2, iterations=5)
@@ -90,7 +90,7 @@ for class_folder in os.listdir(TESTING_PATH):
         unseen = scaler.transform(unseen)
 
         if model is not Model.BaseModel:
-            unseen = unseen[:,subset]
+            unseen = unseen[:,solution]
         prediction = classifier.predict(unseen)[0]
         correct += 1 if prediction == curclass else 0
     predictions[DISEASES[curclass]] = f"{(correct/amount)*100:.2f}%"

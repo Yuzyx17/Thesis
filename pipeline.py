@@ -44,18 +44,16 @@ else:
         for image_file in tqdm(os.listdir(class_path)):
             image_path = os.path.join(class_path, image_file)
             image = cv2.imread(image_path) 
-            # if path is not SEGMENTED_PATH and path is not AUGMENTED_PATH:
-            # image = segment_leaf(image)
-            image = cv2.resize(image, (FEAT_W, FEAT_H))
-            images.append(image)
+            seg_image = segment_leaf(image)
+            seg_image = cv2.resize(seg_image, (FEAT_W, FEAT_H))
+            images.append(seg_image)
             labels.append(class_label)
             if augment:
                 for augmentation_name, augmentation_fn in AUGMENTATIONS:
-                    aug_image = augmentation_fn(image)
-                    # if path is not SEGMENTED_PATH or path is not AUGMENTED_PATH:
-                    #     aug_image = segment_leaf(aug_image)
-                    # seg_aug_image = cv2.resize(aug_image, (FEAT_W, FEAT_H))
-                    images.append(aug_image)
+                    aug_image = augmentation_fn(seg_image)
+                    # seg_aug_image = segment_leaf(aug_image)
+                    seg_aug_image = cv2.resize(seg_aug_image, (FEAT_W, FEAT_H))
+                    images.append(seg_aug_image)
                     labels.append(class_label)
 
     Y = np.array(labels)
@@ -75,10 +73,15 @@ for combination in combinations:
         img_feature = np.array(img_feature)
         X.append(img_feature)
     X = np.array(X)
-    scaler.fit(X)
-    X = scaler.transform(X)
+    scaler = StandardScaler()
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=R_STATE)
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
-    def fitness_function(_subset): return fitness(X, Y, _subset)
+    X_split = X_train, X_test
+    Y_split = Y_train, Y_test
+
+    def fitness_function(subset): return fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
     subset = np.arange(0, X.shape[1])
     fit_accuracy = 0
     
@@ -94,19 +97,19 @@ for combination in combinations:
             with open(f'{LOGS_PATH}/{model.name}/{model.name}-{mark}.json', 'w') as file:
                 data = {'tests': []}
                 json.dump(data, file, indent=4)
-
+        if model is not Model.BaseModel:
+            fit_accuracy = fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
+            print(f"Initial: {subset.shape[0]}: {fit_accuracy}")
         match model:
             case Model.BaseModel:
-                classifier, accuracy = createModel(X, Y)
-                fit_accuracy = accuracy
+                classifier, accuracy = createModel(X_split, Y_split)
             case Model.AntColony:
                 aco = WrapperACO(fitness_function,
-                                X.shape[1], ants=10, iterations=15, parrallel=True, debug=1, accuracy=fit_accuracy)
-                classifier, accuracy, subset = useWrapperACO(X, Y, aco)
-            case Model.ParticleSwarm:
-                classifier, accuracy, subset = useWrapperPSO(X, Y, swarm=10, iterations=15)
+                                X_train.shape[1], ants=5, iterations=5, rho=0.1, Q=.75, debug=1, accuracy=fit_accuracy, parrallel=True)
+                solution = useWrapperACO(aco)
+                classifier, accuracy, = createModel(X_split, Y_split, solution)
         if save:
-            saveModel(classifier, model, subset)
+            saveModel(classifier, scaler, model, subset)
             exec(open("predict.py").read())
 
         end = time.time()
@@ -146,7 +149,7 @@ for combination in combinations:
                 unseen = scaler.transform(unseen)
 
                 if model is not Model.BaseModel:
-                    unseen = unseen[:,subset]
+                    unseen = unseen[:,solution]
                 prediction = classifier.predict(unseen)[0]
                 correct += 1 if prediction == curclass else 0
   
