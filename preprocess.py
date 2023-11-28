@@ -6,15 +6,15 @@ sys.path.append(r'lib/classifier.py')
 import cv2
 from pre.norm import *
 from pre.segment import *
-from utilities.util import displayChannels, displayImages, stopWait
+from utilities.util import displayChannels, displayImages, stopWait, testseg
 
 features= []
 labels= []
 
-test = 1
-disease = Disease.sb
+test = 0
+disease = Disease.rb
 index = 1
-dataset = CAPTURED_PATH
+dataset = TRAINING_PATH
 if test:
     displayImages(
         blb=segment_leaf(cv2.imread(f'{dataset}/blb/{index}.jpg')),
@@ -27,7 +27,7 @@ else:
     # path = r'dataset\google\blb1.jpg'
     img = cv2.imread(path)
     
-    displayChannels(img, alpha=1.25, lower=200, mask=True)
+    # displayChannels(img, alpha=1.25, lower=200, mask=True)
     # displayImages(
     #     size=256,
     #     main=segment_leaf(img)

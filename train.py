@@ -29,7 +29,7 @@ def fitness_function(subset): return fitness(X, Y, subset)
 def fitness_pso_function(subset): return fitness_pso(X, Y, subset)
 
 save = True
-model = Model.BaseModel
+model = Model.AntColony
 subset = np.arange(0, X.shape[1])
 accuracy = 0
 if model is not Model.BaseModel:
@@ -51,7 +51,7 @@ match model:
         classifier, accuracy = createModel(X, Y)
     case Model.AntColony:
         aco = WrapperACO(fitness_function,
-                         X.shape[1], ants=25, iterations=50, rho=0.15, debug=1, accuracy=accuracy, parrallel=True)
+                         X.shape[1], ants=25, iterations=50, rho=0.1, Q=.75, debug=1, accuracy=accuracy, parrallel=True)
         classifier, accuracy, subset = useWrapperACO(X, Y, aco)
     case Model.ParticleSwarm:
         pso = WrapperPSO(fitness_pso_function, X.shape[1], particles=2, iterations=5)
@@ -72,13 +72,13 @@ predictions = {
         'sb' : None,
     }
 
-for class_folder in os.listdir(VALIDATION_PATH):
+for class_folder in os.listdir(TESTING_PATH):
     amount = 0
     correct = 0
     curclass = DISEASES.index(class_folder)
-    for image_file in os.listdir(f"{VALIDATION_PATH}/{class_folder}"):
+    for image_file in os.listdir(f"{TESTING_PATH}/{class_folder}"):
         amount += 1
-        image_path = os.path.join(f"{VALIDATION_PATH}/{class_folder}", image_file)
+        image_path = os.path.join(f"{TESTING_PATH}/{class_folder}", image_file)
         image = cv2.imread(image_path) 
         image = segment_leaf(image)
         image = cv2.resize(image, (FEAT_W, FEAT_H))
@@ -100,7 +100,7 @@ log = {f"Model-{len(data['logs'])+1}":
         "Saved": "True" if save else "False",
         "Images": X.shape[0], "Features": subset.shape[0], 
     #  'Augmentations': [aug[0] for aug in AUGMENTATIONS], 
-        "Predictions": predictions, 
+        "Predictions (Test Set)": predictions, 
         "Additional": 'None' if model is Model.BaseModel else ({
             'Ants': aco.ants,
             'Iterations': aco.iterations,

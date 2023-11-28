@@ -122,8 +122,8 @@ LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0
 
-LB = 195
-UP = 255
+LB = 191
+UB = 251
 
 SHARPEN_KERNEL = np.array([[-1, -1, -1],
                            [-1, 9, -1],

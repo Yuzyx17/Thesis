@@ -109,6 +109,13 @@ def displayChannels(image, size=150, alpha=1, upper=255, lower=127, eq=True, mas
         u=leaf,
     )   
 
+def testseg(image):
+    r, g, b = cv2.split(image)
+    n, tg = cv2.threshold(g, 163, 255, cv2.THRESH_BINARY)
+    g = cv2.bitwise_and(g, g, mask=tg)
+    image = cv2.merge((r, g, b))
+    displayImages(gs=g, rs=r,bs=b)
+
 def stopWait():
     cv2.waitKey()
     cv2.destroyAllWindows()

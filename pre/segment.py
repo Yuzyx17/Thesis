@@ -6,30 +6,19 @@ def segment_leaf(image):
     test = useWhiteBalance(image)
     test = cv2.medianBlur(test, ksize=3)
 
-    hsv = cv2.cvtColor(test, cv2.COLOR_RGB2HSV)
+    hsv = cv2.cvtColor(test, cv2.COLOR_BGR2HSV)
     _, s, v = cv2.split(hsv)
 
     v = cv2.equalizeHist(v)
     v = cv2.convertScaleAbs(v, alpha=1.25)
-    _, v = cv2.threshold(v, 195, 255, cv2.THRESH_BINARY)
-
-    # Define the shape of the kernel (e.g., a square)
-    kernel_shape = cv2.MORPH_ELLIPSE # You can use cv2.MORPH_RECT, cv2.MORPH_ELLIPSE, or cv2.MORPH_CROSS
-
-    # Define the size of the kernel (width and height)
-    kernel_size = (3, 3)  # Adjust the size as needed
-
-    # Create the kernel
-    kernel = cv2.getStructuringElement(kernel_shape, kernel_size)
+    _, v = cv2.threshold(v, LB, UB, cv2.THRESH_BINARY)
     
     # Thresholding based segmentation
     leaf = cv2.bitwise_or(s, v)
     mask = leaf
-    # mask = cv2.dilate(mask, kernel, iterations=6)
-    # mask = cv2.erode(mask, kernel, iterations=2)
-
+    
     # Thresholding
-    _, mask = cv2.threshold(mask, LB, 255, cv2.THRESH_BINARY)
+    _, mask = cv2.threshold(mask, LB, UB, cv2.THRESH_BINARY)
     mask = cv2.bitwise_and(image, image, mask=mask)
 
     return mask
