@@ -16,9 +16,6 @@ from sklearn.model_selection import KFold, cross_val_score, train_test_split
 from sklearn.svm import SVC
 from utilities.features import *
 
-label_encoder = LabelEncoder()
-scaler = StandardScaler()
-
 """
 INITIAL PAThS
 """
@@ -54,8 +51,9 @@ class Disease(Enum):
     rb     =   2
     sb     =   3
 
-DISEASES = ['blb', 'hlt', 'rb', 'sb']
+label_encoder = LabelEncoder()
 
+DISEASES = ['blb', 'hlt', 'rb', 'sb']
 CLASSIFIER = SVC(C=10, kernel='rbf', probability=True)
 CORES = os.cpu_count() // 2
 CORES = CORES if CORES // 2 >= os.cpu_count() else CORES + 1
@@ -70,7 +68,7 @@ PARAM_GRID = {
     'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
     # 'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
-FOLDS = 3 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
+FOLDS = 2 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
 SHUFFLE = True # False to ensure replicability over all models
 
 R_STATE = None # Select Random State to ensure replicablity
@@ -79,18 +77,39 @@ TEST_SIZE = 0.2 #  Percentage of test size
 OBJECTIVE FUNCTION
 """
 
-def fitness(features, labels, subset):
+def fitness_cv(features, labels, subset):
+    assert FOLDS > 1, "Folds must be greater than 1"
     selected_features = features[:, subset]
 
-    if FOLDS > 1:
-        kfold = KFold(n_splits=FOLDS, shuffle=SHUFFLE, random_state=R_STATE)
-        scores = cross_val_score(CLASSIFIER, selected_features, labels, cv=kfold)
-        accuracy = scores.mean()
-    else:
-        X_train, X_test, y_train, y_test = train_test_split(selected_features, labels, test_size=TEST_SIZE, random_state=R_STATE)
-        CLASSIFIER.fit(X_train, y_train)
-        y_pred = CLASSIFIER.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
+    scores = []
+    scaler = StandardScaler()
+
+    kfold = KFold(n_splits=FOLDS, shuffle=SHUFFLE, random_state=R_STATE)
+    for train_index, test_index in kfold.split(selected_features):
+        svm = SVC(C=10, kernel='rbf', probability=True)
+        X_train, X_test = selected_features[train_index], selected_features[test_index]
+        Y_train, Y_test = labels[train_index], labels[test_index]
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
+
+        svm.fit(X_train, Y_train)
+        Y_pred = svm.predict(X_test)
+        accuracy = accuracy_score(Y_test, Y_pred)
+        scores.append(accuracy)
+
+    accuracy = np.array(scores).mean()
+    return accuracy
+
+def fitness(features, labels, subset):
+    scaler = StandardScaler()
+    X_train, X_test, Y_train, Y_test = train_test_split(features[:, subset], labels, test_size=TEST_SIZE, random_state=R_STATE)
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    svm = SVC(C=10, kernel='rbf', probability=True)
+    svm.fit(X_train, Y_train)
+    Y_pred = svm.predict(X_test)
+    accuracy = accuracy_score(Y_test, Y_pred)
 
     return accuracy
 
@@ -117,7 +136,7 @@ def fitness_pso(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W = FEAT_H = 64
+FEAT_W = FEAT_H = 32
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0

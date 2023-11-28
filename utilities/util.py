@@ -140,7 +140,7 @@ def predictImage(image, model: Model):
 
     return prediction
 
-def saveModel(classifier, model, subset=None):
+def saveModel(classifier, scaler, model, subset=None):
     print("Model Saving")
     joblib.dump(classifier, f"{MODEL_PATH}/{model.name}.joblib")
     joblib.dump(scaler, f"{SCALER_PATH}/{model.name}.pkl")

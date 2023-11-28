@@ -222,6 +222,70 @@
                     "Beta": 1.0
                 }
             }
+        },
+        {
+            "Model-12": {
+                "Name": "AntColony",
+                "Date": "2023/11/28 15:47:29",
+                "Elapsed": "00:02:47",
+                "Image Size:": "64x64",
+                "Accuracy": "24.65%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": 7463,
+                "Predictions (Test Set)": {
+                    "blb": "50.00%",
+                    "hlt": "57.14%",
+                    "rb": "76.00%",
+                    "sb": "94.12%"
+                },
+                "Additional": {
+                    "Ants": 2,
+                    "Iterations": 5,
+                    "Rho": 0.1,
+                    "Q": 0.75,
+                    "Alpha": 1.0,
+                    "Beta": 1.0
+                }
+            }
+        },
+        {
+            "Model-13": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 15:52:28",
+                "Elapsed": "00:00:20",
+                "Image Size:": "32x32",
+                "Accuracy": "88.89%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": 4007,
+                "Predictions (Test Set)": {
+                    "blb": "55.00%",
+                    "hlt": "14.29%",
+                    "rb": "84.00%",
+                    "sb": "94.12%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Model-14": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 15:58:32",
+                "Elapsed": "00:00:20",
+                "Image Size:": "32x32",
+                "Accuracy": "90.28%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": 4007,
+                "Predictions (Test Set)": {
+                    "blb": "65.00%",
+                    "hlt": "42.86%",
+                    "rb": "84.00%",
+                    "sb": "88.24%"
+                },
+                "Additional": "None"
+            }
         }
     ]
 }

@@ -11,29 +11,32 @@ from lib.WrapperACO import *
 from lib.WrapperPSO import WrapperPSO
 from utilities.util import getFeatures, saveModel
 
-exec(open("extract_feature.py").read())
+# exec(open("extract_feature.py").read())
+scaler = StandardScaler()
 
 print("Loading Features")
 X = np.load(f"{DATA_PATH}/features.npy")
 Y = np.load(f"{DATA_PATH}/labels.npy")
+Y = label_encoder.fit_transform(Y)
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=R_STATE)
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+X_split = X_train, X_test
+Y_split = Y_train, Y_test
 print(f"Features Loaded {X.shape}")
 
-# Pre process features
-scaler.fit(X)
-X = scaler.transform(X)
-Y = label_encoder.fit_transform(Y)
-joblib.dump(label_encoder, r'dataset\model\encoder.joblib')
-
 # Create fitness function
-def fitness_function(subset): return fitness(X, Y, subset)
+def fitness_function(subset): return fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
 def fitness_pso_function(subset): return fitness_pso(X, Y, subset)
 
-save = True
+save = False
 model = Model.AntColony
-subset = np.arange(0, X.shape[1])
+subset = np.arange(0, X_train.shape[1])
 accuracy = 0
 if model is not Model.BaseModel:
-    accuracy = fitness(X, Y, subset)
+    accuracy = fitness_cv(X_train, Y_train, subset) if FOLDS > 1 else fitness(X_train, Y_train, subset)
     print(f"Initial: {subset.shape[0]}: {accuracy}")
 
 try:
@@ -48,16 +51,17 @@ start = time.time()
 print(f"Training {model.name}")
 match model:
     case Model.BaseModel:
-        classifier, accuracy = createModel(X, Y)
+        classifier, accuracy = createModel(X_split, Y_split)
     case Model.AntColony:
         aco = WrapperACO(fitness_function,
-                         X.shape[1], ants=25, iterations=50, rho=0.1, Q=.75, debug=1, accuracy=accuracy, parrallel=True)
-        classifier, accuracy, subset = useWrapperACO(X, Y, aco)
+                         X_train.shape[1], ants=2, iterations=5, rho=0.1, Q=.75, debug=1, accuracy=accuracy, parrallel=True)
+        solution = useWrapperACO(X, Y, aco)
+        classifier, accuracy, = createModel(X_split, Y_split, solution)
     case Model.ParticleSwarm:
         pso = WrapperPSO(fitness_pso_function, X.shape[1], particles=2, iterations=5)
         classifier, accuracy, subset = useWrapperPSO(X, Y, pso)
 if save:
-    saveModel(classifier, model, subset)
+    saveModel(classifier, scaler, model, subset)
 
 end = time.time()
 hours, remainder = divmod(int(end-start), 3600)
@@ -98,8 +102,7 @@ log = {f"Model-{len(data['logs'])+1}":
         "Image Size:" : f"{FEAT_W}x{FEAT_H}", 
         "Accuracy": f"{100*accuracy:.2f}%", 
         "Saved": "True" if save else "False",
-        "Images": X.shape[0], "Features": subset.shape[0], 
-    #  'Augmentations': [aug[0] for aug in AUGMENTATIONS], 
+        "Images": X_train.shape[0] + X_test.shape[0], "Features": subset.shape[0], 
         "Predictions (Test Set)": predictions, 
         "Additional": 'None' if model is Model.BaseModel else ({
             'Ants': aco.ants,
@@ -109,9 +112,7 @@ log = {f"Model-{len(data['logs'])+1}":
             'Alpha': aco.alpha,
             'Beta': aco.beta
         } if model is Model.AntColony else 'None')}}
+
 with open(f'{LOGS_PATH}/logs.json', 'w+') as file:
     data['logs'].append(log)
     json.dump(data, file, indent=4)
-# with open(f'{LOGS_PATH}/logs.json', 'a') as logs:
-#     logs.write(json.dumps(log, indent=4))
-#     logs.write(f"\n")

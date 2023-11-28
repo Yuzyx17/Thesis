@@ -219,10 +219,13 @@ def useGridSVC(features, labels, param_grid, cv=2):
     return best_params, best_estimator
 
 def createModel(features, labels, selectedFeatures=None):
-    features = features[:, selectedFeatures] if selectedFeatures is not None else features
-    X_train, X_test, Y_train, Y_test = train_test_split(features, labels, test_size=TEST_SIZE, random_state=R_STATE)
+    X_train, X_test = features
+    Y_train, Y_test = labels
 
-    svm = CLASSIFIER
+    X_train = X_train[:, selectedFeatures] if selectedFeatures is not None else X_train
+    X_test = X_test[:, selectedFeatures] if selectedFeatures is not None else X_test
+
+    svm = SVC(C=10, kernel='rbf', probability=True)
     svm.fit(X_train, Y_train)
 
     Y_pred = svm.predict(X_test)
@@ -233,7 +236,7 @@ def createModel(features, labels, selectedFeatures=None):
     print("Classification Report:")
     print(report)
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
-    print(f"Features: {features.shape[1]}")
+    print(f"Features: {X_train.shape[1]}")
 
     with open(f'{LOGS_PATH}/ClassReports.json', 'r+') as file:
         try: data = json.load(file)
@@ -252,8 +255,7 @@ def useWrapperACO(features, labels, aco: WrapperACO):
     print("Optimization with Ant Colony Complete")
     print(f"Solution: {np.sort(solution)} with {100*quality:.2f}% accuracy")
     print(f"Ant Colony ", end=" ")
-    model, accuracy = createModel(features, labels, solution)
-    return model, accuracy, solution
+    return solution
 
 def useWrapperPSO(features, labels, pso: WrapperPSO):
     print("Starting Particle Swarm Optimization")
