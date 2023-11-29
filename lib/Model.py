@@ -28,14 +28,12 @@ class Model():
         if self.solution is not None:
             np.save(f"{FEATURE_PATH}/{self.model.name}.npy", self.solution)
 
-            
     def load(self):
         self.classifier = joblib.load(f"{MODEL_PATH}/{self.model.name}.joblib")
         self.scaler = joblib.load(f"{SCALER_PATH}/{self.model.name}.pkl")
         self.encoder = joblib.load(f"{DATA_PATH}/encoder.pkl")
         if self.model is not ModelType.BaseModel:
             self.solution = np.load(f"{FEATURE_PATH}/{self.model.name}.npy")
-            print(self.solution.shape)
 
     def create(self):
         match self.model:
@@ -44,8 +42,8 @@ class Model():
                 fit_accuracy = fitness_function(np.arange(0, self.X_train.shape[1]))
                 aco = WrapperACO(fitness_function,
                                 self.X_train.shape[1], 
-                                ants=25, 
-                                iterations=30, 
+                                ants=15, 
+                                iterations=20, 
                                 rho=0.1, 
                                 Q=.75, 
                                 debug=1, 
@@ -84,5 +82,8 @@ class Model():
             X = X[:, self.solution]
         
         prediction = self.classifier.predict_proba(X)
-        print(self.encoder.classes_)
-        return prediction
+        predicted = self.classifier.predict(X)
+        
+        predictions = {label:probability for (label, probability) in zip(self.encoder.classes_, prediction[0])}
+        predictions['predicted'] = self.encoder.classes_[predicted[0]] 
+        return predictions

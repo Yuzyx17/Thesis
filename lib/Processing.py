@@ -17,26 +17,6 @@ def segment(image):
 
     return image
 
-def predictImage(image, model: ModelType):
-    classifier = joblib.load(f"{MODEL_PATH}/{model.name}.joblib")
-    scaler = joblib.load(f"{SCALER_PATH}/{model.name}.pkl")
-    encoder = joblib.load(r'dataset\model\encoder.joblib')
-
-    image = cv2.imread(image) 
-    image = segment(image)
-    image = cv2.resize(image, (WIDTH, HEIGHT))
-    X = [extractFeatures(image)]
-    X = scaler.transform(X)
-
-    if model is not ModelType.BaseModel:
-        selected_features = np.load(f"{FEATURE_PATH}/{model.name}.npy")
-        X = X[:,selected_features]
-    
-    prediction = classifier.predict_proba(X)
-    print(encoder.classes_)
-
-    return prediction
-
 def loadImages(dataset_path):
     features = []
     labels = []

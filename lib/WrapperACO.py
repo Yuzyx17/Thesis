@@ -6,12 +6,11 @@ import numpy.typing as npt
 from typing import List
 from joblib import Parallel, delayed
 from const import *
-np.set_printoptions(threshold=10)
 
 class WrapperACO(object):
-    def __init__(self, fitness, n_features, ants=30, iterations=100, alpha=1.0, beta=1.0, rho=0.1, Q=1.0, debug=False, parrallel=False, cores=0, accuracy=0.0):
+    def __init__(self, fitness, n_features, ants=20, iterations=50, alpha=1.0, beta=1.0, rho=0.1, Q=1.0, debug=False, parrallel=False, cores=0, accuracy=0.0):
         """
-        Initialize the ACOFeatureSelection class with parameters for ACO-based feature selection.
+        Initialize the ACO Feature Selection
 
         Parameters:
         - model : Model Evaluator

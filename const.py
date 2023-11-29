@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 from sklearn.svm import SVC
 from utilities.features import *
-
+np.set_printoptions(threshold=10)
 """
 INITIAL PAThS
 """
@@ -182,7 +182,6 @@ N_BINS = 8
 
 FEATURES = {
     'SHP-HOG' : lambda image: getHOGFeatures(image, ORIENT, PPC, CPB), 
-    # 'IMG-HOG' : lambda image: getHOGImageFeatures(image, ORIENT, PPC, CPB), 
     'TXR-GLCM': lambda image: getGLCMFeatures(image, DISTANCE, ANGLES, LEVELS),
     'TXR-LBP' : lambda image: getLBPFeatures(image, RADIUS, POINTS),
     'COL-HSV' : lambda image: getHSVFeatures(image),

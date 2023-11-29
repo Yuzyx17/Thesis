@@ -3,10 +3,6 @@
 __pycache__
 dataset/*
 
-*.joblib
-*.pkl
-*.npy
-
 !dataset/model
 !dataset/finalized
 reports/old reports
