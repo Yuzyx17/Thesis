@@ -11,7 +11,7 @@ from lib.WrapperACO import *
 from lib.WrapperPSO import WrapperPSO
 from utilities.util import getFeatures, saveModel
 
-exec(open("extract_feature.py").read())
+# exec(open("extract_feature.py").read())
 scaler = StandardScaler()
 
 print("Loading Features")
@@ -32,7 +32,7 @@ def fitness_function(subset): return fitness_cv(X_train, Y_train, subset) if FOL
 def fitness_pso_function(subset): return fitness_pso(X, Y, subset)
 
 save = True
-model = Model.BaseModel
+model = Model.AntColony
 subset = np.arange(0, X_train.shape[1])
 fit_accuracy = 0
 if model is not Model.BaseModel:
@@ -41,7 +41,10 @@ if model is not Model.BaseModel:
 
 try:
     with open(f'{LOGS_PATH}/logs.json', 'r') as file:
-        data = json.load(file)
+        try:
+            data = json.load(file)
+        except json.decoder.JSONDecodeError:
+            data = {'logs': []}
 except FileNotFoundError:
     with open(f'{LOGS_PATH}/logs.json', 'w') as file:
         data = {'logs': []}
@@ -51,10 +54,10 @@ start = time.time()
 print(f"Training {model.name}")
 match model:
     case Model.BaseModel:
-        classifier, accuracy = createModel(X_split, Y_split)
+        classifier, accuracy = useCVTests(X, Y) if FOLDS > 1 else createModel(X_split, Y_split) 
     case Model.AntColony:
         aco = WrapperACO(fitness_function,
-                         X_train.shape[1], ants=5, iterations=5, rho=0.1, Q=.75, debug=1, accuracy=fit_accuracy, parrallel=True)
+                         X_train.shape[1], ants=30, iterations=50, rho=0.1, Q=.75, debug=1, accuracy=fit_accuracy, parrallel=True, cores=6)
         solution = useWrapperACO(aco)
         classifier, accuracy, = createModel(X_split, Y_split, solution)
     case Model.ParticleSwarm:

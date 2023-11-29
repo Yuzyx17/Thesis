@@ -238,14 +238,80 @@ def createModel(features, labels, selectedFeatures=None):
     print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
     print(f"Features: {X_train.shape[1]}")
 
-    with open(f'{LOGS_PATH}/ClassReports.json', 'r+') as file:
-        try: data = json.load(file)
-        except json.decoder.JSONDecodeError: data = {'reports':[]}
+    try:
+        with open(f'{LOGS_PATH}/ClassReports.json', 'r') as file:
+            try:
+                data = json.load(file)
+            except json.decoder.JSONDecodeError:
+                data = {'reports': []}
+    except FileNotFoundError:
+        with open(f'{LOGS_PATH}/ClassReports.json', 'w') as file:
+            data = {'reports': []}
+            json.dump(data, file, indent=4)
 
-        data['reports'].append({len(data['reports'])+1:jsonreport})
-        file.seek(0)
+    with open(f'{LOGS_PATH}/ClassReports.json', 'w+') as file:
+        data['reports'].append({f"Model-{len(data['reports'])+1}":jsonreport})
         json.dump(data, file, indent=4)
-        file.truncate()
+        
+    return svm, overall_accuracy
+
+def useCVTests(X, Y, selectedFeatures=None):
+    selected_features = X[:, selected_features] if selectedFeatures is not None else X
+    scores = []
+
+    kfold = KFold(n_splits=FOLDS, shuffle=SHUFFLE, random_state=R_STATE)
+    for train_index, test_index in kfold.split(selected_features):
+        scaler = StandardScaler()
+        svm = SVC(C=10, kernel='rbf', probability=True)
+        X_train, X_test = selected_features[train_index], selected_features[test_index]
+        Y_train, Y_test = Y[train_index], Y[test_index]
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
+
+        svm.fit(X_train, Y_train)
+        Y_pred = svm.predict(X_test)
+        valid_score = accuracy_score(Y_test, Y_pred)
+        scores.append(valid_score)
+
+    valid_accuracy = np.array(scores).mean()
+    print(f"Validated Overall Accuracy: {valid_accuracy}")
+
+    scaler = StandardScaler()
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=42)
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    X_train = X_train[:, selectedFeatures] if selectedFeatures is not None else X_train
+    X_test = X_test[:, selectedFeatures] if selectedFeatures is not None else X_test
+
+    svm = SVC(C=10, kernel='rbf', probability=True)
+    svm.fit(X_train, Y_train)
+
+    Y_pred = svm.predict(X_test)
+    report = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, zero_division='warn')
+    jsonreport = classification_report(Y_test, Y_pred, target_names=label_encoder.classes_, output_dict=True)
+    jsonreport['Validated Accuracy'] = valid_accuracy
+    overall_accuracy = accuracy_score(Y_test, Y_pred)
+
+    print("Classification Report:")
+    print(report)
+    print(f"Overall Accuracy: {overall_accuracy * 100:.2f}%")
+    print(f"Features: {X_train.shape[1]}")
+
+    try:
+        with open(f'{LOGS_PATH}/ClassReports.json', 'r') as file:
+            try:
+                data = json.load(file)
+            except json.decoder.JSONDecodeError:
+                data = {'reports': []}
+    except FileNotFoundError:
+        with open(f'{LOGS_PATH}/ClassReports.json', 'w') as file:
+            data = {'reports': []}
+            json.dump(data, file, indent=4)
+
+    with open(f'{LOGS_PATH}/ClassReports.json', 'w+') as file:
+        data['reports'].append({f"Model-{len(data['reports'])+1}":jsonreport})
+        json.dump(data, file, indent=4)
         
     return svm, overall_accuracy
 

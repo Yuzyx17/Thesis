@@ -68,11 +68,12 @@ PARAM_GRID = {
     'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
     # 'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
-FOLDS = 3 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
+FOLDS = 4 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
 SHUFFLE = True # False to ensure replicability over all models
 
 R_STATE = None # Select Random State to ensure replicablity
 TEST_SIZE = 0.2 #  Percentage of test size
+VAL_SIZE = 0.25
 """
 OBJECTIVE FUNCTION
 """
@@ -87,14 +88,14 @@ def fitness_cv(features, labels, subset):
     for train_index, test_index in kfold.split(selected_features):
         scaler = StandardScaler()
         svm = SVC(C=10, kernel='rbf', probability=True)
-        X_train, X_test = selected_features[train_index], selected_features[test_index]
-        Y_train, Y_test = labels[train_index], labels[test_index]
+        X_train, X_val = selected_features[train_index], selected_features[test_index]
+        Y_train, Y_val = labels[train_index], labels[test_index]
         X_train = scaler.fit_transform(X_train)
-        X_test = scaler.transform(X_test)
+        X_val = scaler.transform(X_val)
 
         svm.fit(X_train, Y_train)
-        Y_pred = svm.predict(X_test)
-        accuracy = accuracy_score(Y_test, Y_pred)
+        Y_pred = svm.predict(X_val)
+        accuracy = accuracy_score(Y_val, Y_pred)
         scores.append(accuracy)
 
     accuracy = np.array(scores).mean()
@@ -102,14 +103,14 @@ def fitness_cv(features, labels, subset):
 
 def fitness(features, labels, subset):
     scaler = StandardScaler()
-    X_train, X_test, Y_train, Y_test = train_test_split(features[:, subset], labels, test_size=TEST_SIZE, random_state=R_STATE)
+    X_train, X_val, Y_train, Y_val = train_test_split(features[:, subset], labels, test_size=VAL_SIZE, random_state=R_STATE)
     X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
+    X_val = scaler.transform(X_val)
 
     svm = SVC(C=10, kernel='rbf', probability=True)
     svm.fit(X_train, Y_train)
-    Y_pred = svm.predict(X_test)
-    accuracy = accuracy_score(Y_test, Y_pred)
+    Y_pred = svm.predict(X_val)
+    accuracy = accuracy_score(Y_val, Y_pred)
 
     return accuracy
 
@@ -136,7 +137,7 @@ def fitness_pso(features, labels, subset):
 FOR PRE-PROCESSING
 """
 WIDTH, HEIGHT = 500, 500
-FEAT_W = FEAT_H = 50
+FEAT_W = FEAT_H = 100
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0
@@ -183,7 +184,7 @@ N_BINS = 8
 
 FEATURES = {
     'SHP-HOG' : lambda image: getHOGFeatures(image, ORIENT, PPC, CPB), 
-    'IMG-HOG' : lambda image: getHOGImageFeatures(image, ORIENT, PPC, CPB), 
+    # 'IMG-HOG' : lambda image: getHOGImageFeatures(image, ORIENT, PPC, CPB), 
     'TXR-GLCM': lambda image: getGLCMFeatures(image, DISTANCE, ANGLES, LEVELS),
     'TXR-LBP' : lambda image: getLBPFeatures(image, RADIUS, POINTS),
     'COL-HSV' : lambda image: getHSVFeatures(image),

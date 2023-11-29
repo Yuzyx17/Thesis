@@ -3,10 +3,7 @@ from utilities.const import *
 from pre.norm import *
 
 def segment_leaf(image):
-    test = useWhiteBalance(image)
-    test = cv2.medianBlur(test, ksize=3)
-
-    hsv = cv2.cvtColor(test, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     _, s, v = cv2.split(hsv)
 
     v = cv2.equalizeHist(v)

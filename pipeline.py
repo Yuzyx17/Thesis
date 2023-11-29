@@ -31,8 +31,9 @@ if os.path.exists(f"{DATA_PATH}/images.npy"):
     images = np.load(f"{DATA_PATH}/images.npy")
     labels = np.load(f"{DATA_PATH}/labels.npy")
 else:
-    path = AUGMENTED_PATH
-    augment = False
+    path = TRAINING_PATH
+    augment = True
+    pre = False
     print("Processing Images")
     for class_folder in os.listdir(path):
         class_label = class_folder
@@ -50,10 +51,11 @@ else:
             labels.append(class_label)
             if augment:
                 for augmentation_name, augmentation_fn in AUGMENTATIONS:
-                    aug_image = augmentation_fn(seg_image)
-                    # seg_aug_image = segment_leaf(aug_image)
-                    seg_aug_image = cv2.resize(seg_aug_image, (FEAT_W, FEAT_H))
-                    images.append(seg_aug_image)
+                    aug_image = augmentation_fn(image if pre else seg_image)
+                    if pre:
+                        aug_image = segment_leaf(aug_image)
+                        aug_image = cv2.resize(aug_image, (FEAT_W, FEAT_H))
+                    images.append(aug_image)
                     labels.append(class_label)
 
     Y = np.array(labels)

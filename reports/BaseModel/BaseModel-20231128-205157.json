@@ -1,0 +1,243 @@
+{
+    "tests": [
+        {
+            "Test-1": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 20:56:27",
+                "Elapsed": "00:00:33",
+                "Image Size:": "200x200",
+                "Accuracy": "78.12%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": {
+                    "Amount": 5000,
+                    "Feature": [
+                        "SHP-HOG"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "35.00%",
+                    "hlt": "14.29%",
+                    "rb": "32.00%",
+                    "sb": "58.82%"
+                },
+                "Validation (OL)": {
+                    "blb": "8.70%",
+                    "hlt": "46.00%",
+                    "rb": "14.58%",
+                    "sb": "40.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Test-2": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 20:56:57",
+                "Elapsed": "00:00:00",
+                "Image Size:": "200x200",
+                "Accuracy": "89.93%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": {
+                    "Amount": 15,
+                    "Feature": [
+                        "TXR-GLCM",
+                        "TXR-LBP"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "25.00%",
+                    "hlt": "42.86%",
+                    "rb": "76.00%",
+                    "sb": "94.12%"
+                },
+                "Validation (OL)": {
+                    "blb": "56.52%",
+                    "hlt": "0.00%",
+                    "rb": "12.50%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Test-3": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 20:57:28",
+                "Elapsed": "00:00:09",
+                "Image Size:": "200x200",
+                "Accuracy": "92.71%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": {
+                    "Amount": 2840,
+                    "Feature": [
+                        "COL-HSV",
+                        "COL-LAB",
+                        "COL-RGB",
+                        "COL-STAT",
+                        "COL-COLHIST",
+                        "COL-CCV"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "30.00%",
+                    "hlt": "57.14%",
+                    "rb": "64.00%",
+                    "sb": "82.35%"
+                },
+                "Validation (OL)": {
+                    "blb": "73.91%",
+                    "hlt": "0.00%",
+                    "rb": "12.50%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Test-4": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 21:01:27",
+                "Elapsed": "00:00:29",
+                "Image Size:": "200x200",
+                "Accuracy": "74.65%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": {
+                    "Amount": 5015,
+                    "Feature": [
+                        "SHP-HOG",
+                        "TXR-GLCM",
+                        "TXR-LBP"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "30.00%",
+                    "hlt": "14.29%",
+                    "rb": "32.00%",
+                    "sb": "76.47%"
+                },
+                "Validation (OL)": {
+                    "blb": "8.70%",
+                    "hlt": "54.00%",
+                    "rb": "16.67%",
+                    "sb": "44.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Test-5": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 21:05:28",
+                "Elapsed": "00:00:43",
+                "Image Size:": "200x200",
+                "Accuracy": "92.01%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": {
+                    "Amount": 7840,
+                    "Feature": [
+                        "SHP-HOG",
+                        "COL-HSV",
+                        "COL-LAB",
+                        "COL-RGB",
+                        "COL-STAT",
+                        "COL-COLHIST",
+                        "COL-CCV"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "35.00%",
+                    "hlt": "57.14%",
+                    "rb": "64.00%",
+                    "sb": "94.12%"
+                },
+                "Validation (OL)": {
+                    "blb": "47.83%",
+                    "hlt": "100.00%",
+                    "rb": "2.08%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Test-6": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 21:06:29",
+                "Elapsed": "00:00:07",
+                "Image Size:": "200x200",
+                "Accuracy": "90.97%",
+                "Saved": "False",
+                "Images": 1440,
+                "Features": {
+                    "Amount": 2855,
+                    "Feature": [
+                        "TXR-GLCM",
+                        "TXR-LBP",
+                        "COL-HSV",
+                        "COL-LAB",
+                        "COL-RGB",
+                        "COL-STAT",
+                        "COL-COLHIST",
+                        "COL-CCV"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "25.00%",
+                    "hlt": "57.14%",
+                    "rb": "64.00%",
+                    "sb": "88.24%"
+                },
+                "Validation (OL)": {
+                    "blb": "43.48%",
+                    "hlt": "100.00%",
+                    "rb": "8.33%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        },
+        {
+            "Test-7": {
+                "Name": "BaseModel",
+                "Date": "2023/11/28 21:10:47",
+                "Elapsed": "00:00:44",
+                "Image Size:": "200x200",
+                "Accuracy": "92.71%",
+                "Saved": "True",
+                "Images": 1,
+                "Features": {
+                    "Amount": 7855,
+                    "Feature": [
+                        "SHP-HOG",
+                        "TXR-GLCM",
+                        "TXR-LBP",
+                        "COL-HSV",
+                        "COL-LAB",
+                        "COL-RGB",
+                        "COL-STAT",
+                        "COL-COLHIST",
+                        "COL-CCV"
+                    ]
+                },
+                "Testing (LB)": {
+                    "blb": "35.00%",
+                    "hlt": "28.57%",
+                    "rb": "64.00%",
+                    "sb": "94.12%"
+                },
+                "Validation (OL)": {
+                    "blb": "39.13%",
+                    "hlt": "100.00%",
+                    "rb": "0.00%",
+                    "sb": "0.00%"
+                },
+                "Additional": "None"
+            }
+        }
+    ]
+}
