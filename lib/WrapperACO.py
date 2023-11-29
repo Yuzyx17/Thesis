@@ -5,7 +5,7 @@ import numpy.typing as npt
 
 from typing import List
 from joblib import Parallel, delayed
-from utilities.const import *
+from const import *
 np.set_printoptions(threshold=10)
 
 class WrapperACO(object):

@@ -1,7 +1,7 @@
 import numpy as np
 from joblib import Parallel, delayed
 
-from utilities.const import *
+from const import *
 
 class WrapperPSO:
     def __init__(self, fitness, n_features, particles=5, iterations=10, c1=1.49618, c2=1.49618, w=0.7298, threshold=0.6):

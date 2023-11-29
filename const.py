@@ -5,7 +5,6 @@ from sklearn.discriminant_analysis import StandardScaler
 
 sys.path.append(r'lib')
 sys.path.append(r'utilities')
-sys.path.append(r'pre')
 
 import os
 import cv2
@@ -39,7 +38,7 @@ LOGS_PATH = r'reports'
 """
 GENERAL CONSTANTS
 """
-class Model(Enum):
+class ModelType(Enum):
     BaseModel       = 0
     ParticleSwarm   = 1
     AntColony       = 2
@@ -136,8 +135,7 @@ def fitness_pso(features, labels, subset):
 """
 FOR PRE-PROCESSING
 """
-WIDTH, HEIGHT = 500, 500
-FEAT_W = FEAT_H = 100
+WIDTH = HEIGHT = 100
 LTHRESHOLD = 128
 DENOISE_KERNEL = (3, 3)
 DENOISE_SIGMA = 0

@@ -2,8 +2,13 @@
 .venv/share
 __pycache__
 dataset/*
-!dataset/finalized
 
+*.joblib
+*.pkl
+*.npy
+
+!dataset/model
+!dataset/finalized
 reports/old reports
 
 pipe
