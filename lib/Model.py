@@ -1,6 +1,7 @@
 import joblib
 from sklearn.metrics import classification_report, confusion_matrix, f1_score, precision_score, recall_score
 from lib.Processing import extractFeatures, segment
+from lib.WrapperABC import WrapperABC
 from lib.WrapperACO import WrapperACO
 from lib.WrapperPSO import WrapperPSO
 from const import *
@@ -40,12 +41,12 @@ class Model():
     def create(self):
         match self.model:
             case ModelType.AntColony:
-                fitness_function = lambda subset: fitness_cv(self.X_train, self.Y_train, subset)
+                fitness_function = lambda subset: fitness_cv(self.X_train, self.Y_train, subset) if FOLDS > 1 else fitness(self.X_train, self.Y_train, subset)
                 fit_accuracy = fitness_function(np.arange(0, self.X_train.shape[1]))
                 aco = WrapperACO(fitness_function,
                                 self.X_train.shape[1], 
-                                ants=15, 
-                                iterations=20, 
+                                ants=3, 
+                                iterations=3, 
                                 rho=0.1, 
                                 Q=.75, 
                                 debug=1, 
@@ -61,7 +62,12 @@ class Model():
                                  particles=1, 
                                  iterations=1)
                 self.solution = pso.optimize()
-                
+
+            case ModelType.ArtificialBee:
+                fitness_function = lambda subset: fitness_cv(self.X_train, self.Y_train, subset) if FOLDS > 1 else fitness(self.X_train, self.Y_train, subset)
+                abc = WrapperABC(fitness_function, self.X_train.shape[1], bees=4, iterations=4)
+                self.solution = abc.optimize()
+
         X_train = self.X_train[:, self.solution] if self.solution is not None else self.X_train
         X_test = self.X_test[:, self.solution] if self.solution is not None else self.X_test
 
@@ -75,9 +81,10 @@ class Model():
 
     def obtainMetrics(self, test=None):
         X_test, Y_test = test if test is not None else (self.X_test, self.Y_test)
-        X_test = X_test[:, self.solution] if self.solution is not None else X_test
-        X_test = self.scaler.transform(X_test) if test is not None else X_test
+        X_test = self.scaler.transform(X_test) if test is not None else Y_test
+        X_test = X_test[:, self.solution] if self.solution is not None else X_test 
         Y_test = self.encoder.transform(Y_test) if test is not None else Y_test
+
 
         Y_pred = self.classifier.predict(X_test)
         report = classification_report(Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)

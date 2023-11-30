@@ -73,11 +73,9 @@ class WrapperACO:
         return (1 - self.rho) * self.tau + delta_tau
     
     # Ants explore the graph
-    def tour(self, ant, subset_amount=0):
-        assert subset_amount <= self.features
-
+    def tour(self, ant):
         node = np.random.randint(self.features) # Select a random node
-        subset_amount = self.features//2 if subset_amount < 1 else subset_amount
+        subset_amount = np.random.randint(1, self.features) # Initialize a random number of features
         path = [node] # Start with arbitrary node
 
         while len(path) < subset_amount:
@@ -98,15 +96,14 @@ class WrapperACO:
             if self.debug:
                 print(f"Iteration {iteration+1}", end=" ")
 
-            subset_amount = np.random.randint(2, self.features) # Initialize a random number of features
             local_solutions = [] # Store local solutions
             delta_tau = np.zeros_like(self.tau) # Initialize initial tau values
 
             if self.parallelization:
-                local_solutions = Parallel(n_jobs=self.cores)(delayed(self.tour)(ant, subset_amount) for ant in range(self.ants))
+                local_solutions = Parallel(n_jobs=self.cores)(delayed(self.tour)(ant) for ant in range(self.ants))
             else:
                 for ant in range(self.ants):
-                    local_solution, local_accuracy = self.tour(ant, subset_amount)
+                    local_solution, local_accuracy = self.tour(ant)
                     local_solutions.append((local_solution, local_accuracy))
 
             for solution, accuracy in local_solutions:
@@ -118,7 +115,7 @@ class WrapperACO:
             self.tau = self.update_pheromone(delta_tau)
 
             if self.debug:
-                print(f"Solution:\t {self.solution} {self.accuracy:02f} {len(self.solution)} {subset_amount}")
+                print(f"Solution:\t {self.solution} {self.accuracy:02f} {len(self.solution)} {self.solution.shape[0]}")
 
         return self.solution, self.accuracy
     

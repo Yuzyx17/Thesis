@@ -67,7 +67,7 @@ PARAM_GRID = {
     'probability': [True, False],  # Add this line to control the randomness of the underlying implementation
     # 'random_state': [None, 0, 42]  # Add this line to control the seed of the random number generator
 }
-FOLDS = 4 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
+FOLDS = 1 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
 SHUFFLE = True # False to ensure replicability over all models
 
 R_STATE = 2 # Select Random State to ensure replicablity
