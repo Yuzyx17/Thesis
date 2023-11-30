@@ -9,19 +9,6 @@ from const import *
 
 class WrapperACO:
     def __init__(self, fitness, n_features, ants=20, iterations=50, alpha=1.0, beta=1.0, rho=0.1, Q=1.0, debug=False, parrallel=False, cores=0, accuracy=0.0):
-        """
-        Initialize the ACO Feature Selection
-
-        Parameters:
-        - model : Model Evaluator
-        - ants (int): Number of ants in the ACO colony.
-        - iterations (int): Maximum number of iterations or generations.
-        - alpha (float): Pheromone influence factor for the probability calculation.
-        - beta (float): Heuristic influence factor for the probability calculation.
-        - rho (float): Pheromone evaporation rate (between 0 and 1).
-        - Q (float): Pheromone deposit amount for selected features.
-        - delta (float): Pheromone deposit decay factor for selected features.
-        """
         self.ants = ants
         self.iterations = iterations
         self.alpha = alpha
@@ -117,29 +104,4 @@ class WrapperACO:
             if self.debug:
                 print(f"Solution:\t {self.solution} {self.accuracy:02f} {len(self.solution)} {self.solution.shape[0]}")
 
-        return self.solution, self.accuracy
-    
-    def start_run(self, iterations=None):
-        self.iterations = iterations if iterations is not None else self.iterations
-        self.optimize()
-        self.fitness = None
-        joblib.dump(self, f"{DATA_PATH}/WrapperAco.pkl")
-        return self.solution, self.accuracy
-    
-    def continue_run(self, fit, iterations=None):
-        assert os.path.exists(f"{DATA_PATH}/WrapperAco.pkl"), "No WrapperACO found, start with start_run method"
-        self = joblib.load(f"{DATA_PATH}/WrapperAco.pkl")
-        self.fitness = fit
-        self.iterations = iterations if iterations is not None else self.iterations
-        self.optimize()
-        self.fitness = None
-        joblib.dump(self, f"{DATA_PATH}/WrapperAco.pkl")
-        return self.solution, self.accuracy
-
-    def finish_run(self, fit, iterations=None):
-        assert os.path.exists(f"{DATA_PATH}/WrapperAco.pkl"), "No WrapperACO found, start with start_run method"
-        self = joblib.load(f"{DATA_PATH}/WrapperAco.pkl")
-        self.fitness = fit
-        self.iterations = iterations if iterations is not None else self.iterations
-        self.optimize()
         return self.solution, self.accuracy

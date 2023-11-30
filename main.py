@@ -8,6 +8,4 @@ image = r'dataset\finalized\validation\blb\40.jpg'
 
 model = Model(ModelType.BaseModel)
 model.load()
-X, Y = loadUnseenImages()
-model.obtainMetrics((X, Y))
-pprint.pprint(model.metrics)
+pprint.pprint(model.predict(image))
