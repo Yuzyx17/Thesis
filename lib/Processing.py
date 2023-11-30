@@ -17,7 +17,7 @@ def segment(image):
 
     return image
 
-def loadImages(dataset_path):
+def loadImages(dataset_path=TRAINING_PATH):
     features = []
     labels = []
     # Loop through the class folders
@@ -53,6 +53,29 @@ def loadImages(dataset_path):
 def preLoadImages():
     features = np.load(f"{DATA_PATH}/features.npy")
     labels = np.load(f"{DATA_PATH}/labels.npy")
+
+    return features, labels
+
+def loadUnseenImages():
+    features = []
+    labels = []
+    # Loop through the class folders
+    for class_folder in os.listdir(TESTING_PATH):
+        class_label = class_folder
+        class_path = os.path.join(TESTING_PATH, class_folder)
+
+        for image_file in os.listdir(class_path):
+            image_path = os.path.join(class_path, image_file)
+            image = cv2.imread(image_path) 
+            seg_image = segment(image)
+            seg_image = cv2.resize(seg_image, (WIDTH, HEIGHT))
+            
+            feature = extractFeatures(seg_image)
+            features.append(feature)
+            labels.append(class_label)
+    
+    features = np.array(features)
+    labels = np.array(labels)
 
     return features, labels
 

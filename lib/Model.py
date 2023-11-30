@@ -73,18 +73,21 @@ class Model():
         self.accuracy = accuracy_score(self.Y_test, Y_pred)
         self.classifier = svm
 
-    def obtainMetrics(self):
-        X_test = self.X_test[:, self.solution] if self.solution is not None else self.X_test
+    def obtainMetrics(self, test=None):
+        X_test, Y_test = test if test is not None else (self.X_test, self.Y_test)
+        X_test = X_test[:, self.solution] if self.solution is not None else X_test
+        X_test = self.scaler.transform(X_test) if test is not None else X_test
+        Y_test = self.encoder.transform(Y_test) if test is not None else Y_test
 
         Y_pred = self.classifier.predict(X_test)
-        self.report = classification_report(self.Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)
-        self.accuracy = accuracy_score(self.Y_test, Y_pred)
-        self.confusion = confusion_matrix(self.Y_test, Y_pred, normalize='all')
+        report = classification_report(Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)
+        accuracy = accuracy_score(Y_test, Y_pred)
+        confusion = confusion_matrix(Y_test, Y_pred, normalize='all')
 
-        FP = self.confusion.sum(axis=0) - np.diag(self.confusion)  
-        FN = self.confusion.sum(axis=1) - np.diag(self.confusion)
-        TP = np.diag(self.confusion)
-        TN = self.confusion.sum() - (FP + FN + TP)
+        FP = confusion.sum(axis=0) - np.diag(confusion)  
+        FN = confusion.sum(axis=1) - np.diag(confusion)
+        TP = np.diag(confusion)
+        TN = confusion.sum() - (FP + FN + TP)
 
         # Overall accuracy
         PRECISION = TP/(TP+FP)
@@ -92,17 +95,17 @@ class Model():
         F1 = 2 * (PRECISION * RECALL) / (PRECISION + RECALL)
         ACCURACY = (TP+TN)/(TP+FP+FN+TN)
 
-        macro_precision = precision_score(self.Y_test, Y_pred, average='macro')
-        macro_recall = recall_score(self.Y_test, Y_pred, average='macro')
-        macro_f1 = f1_score(self.Y_test, Y_pred, average='macro')
+        macro_precision = precision_score(Y_test, Y_pred, average='macro')
+        macro_recall = recall_score(Y_test, Y_pred, average='macro')
+        macro_f1 = f1_score(Y_test, Y_pred, average='macro')
 
-        micro_precision = precision_score(self.Y_test, Y_pred, average='micro')
-        micro_recall = recall_score(self.Y_test, Y_pred, average='micro')
-        micro_f1 = f1_score(self.Y_test, Y_pred, average='micro')
+        micro_precision = precision_score(Y_test, Y_pred, average='micro')
+        micro_recall = recall_score(Y_test, Y_pred, average='micro')
+        micro_f1 = f1_score(Y_test, Y_pred, average='micro')
 
-        weighted_precision = precision_score(self.Y_test, Y_pred, average='weighted')
-        weighted_recall = recall_score(self.Y_test, Y_pred, average='weighted')
-        weighted_f1 = f1_score(self.Y_test, Y_pred, average='weighted')
+        weighted_precision = precision_score(Y_test, Y_pred, average='weighted')
+        weighted_recall = recall_score(Y_test, Y_pred, average='weighted')
+        weighted_f1 = f1_score(Y_test, Y_pred, average='weighted')
 
         stack = np.array((PRECISION, RECALL, F1, ACCURACY))
         labels = ['precision', 'recall', 'f1', 'accuracy']
@@ -126,7 +129,8 @@ class Model():
                 'recall':       weighted_recall,
                 'f1':           weighted_f1,
             },
-            'accuracy': self.accuracy
+            'accuracy': accuracy,
+            'report': report
         }
 
         return self.metrics

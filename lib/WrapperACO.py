@@ -7,7 +7,7 @@ from typing import List
 from joblib import Parallel, delayed
 from const import *
 
-class WrapperACO(object):
+class WrapperACO:
     def __init__(self, fitness, n_features, ants=20, iterations=50, alpha=1.0, beta=1.0, rho=0.1, Q=1.0, debug=False, parrallel=False, cores=0, accuracy=0.0):
         """
         Initialize the ACO Feature Selection
