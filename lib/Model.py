@@ -65,8 +65,9 @@ class Model():
 
             case ModelType.ArtificialBee:
                 fitness_function = lambda subset: fitness_cv(self.X_train, self.Y_train, subset) if FOLDS > 1 else fitness(self.X_train, self.Y_train, subset)
-                abc = WrapperABC(fitness_function, self.X_train.shape[1], bees=4, iterations=4)
+                abc = WrapperABC(fitness_function, self.X_train.shape[1], bees=10, iterations=10)
                 self.solution = abc.optimize()
+                print(self.solution.shape[0])
 
         X_train = self.X_train[:, self.solution] if self.solution is not None else self.X_train
         X_test = self.X_test[:, self.solution] if self.solution is not None else self.X_test

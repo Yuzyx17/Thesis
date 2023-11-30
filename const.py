@@ -70,7 +70,7 @@ PARAM_GRID = {
 FOLDS = 1 # Amount of folds, KFOLD is automatically applied if FOLDS > 1
 SHUFFLE = True # False to ensure replicability over all models
 
-R_STATE = 2 # Select Random State to ensure replicablity
+R_STATE = None # Select Random State to ensure replicablity
 TEST_SIZE = 0.2 #  Percentage of test size
 VAL_SIZE = 0.25
 """
