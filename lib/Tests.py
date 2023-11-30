@@ -17,7 +17,42 @@ from lib.WrapperACO import WrapperACO
 from lib.WrapperPSO import WrapperPSO
 
 from const import *
+def testAnalysis(self):
+    FP = self.confusion.sum(axis=0) - np.diag(self.confusion)  
+    FN = self.confusion.sum(axis=1) - np.diag(self.confusion)
+    TP = np.diag(self.confusion)
+    TN = self.confusion.sum() - (FP + FN + TP)
 
+    TOTAL_FP = FP.sum()
+    TOTAL_FN = FN.sum()
+    TOTAL_TP = TP.sum()
+    TOTAL_TN = TN.sum()
+
+    # Overall accuracy
+    PRECISION = TP/(TP+FP)
+    RECALL = TP/(TP+FN)
+    F1 = 2 * ((PRECISION * RECALL)/(PRECISION + RECALL))
+    ACCURACY = (TP+TN)/(TP+FP+FN+TN)
+
+    TOTAL_ACCURACY = (TOTAL_TP+TOTAL_TN)/(TOTAL_TP+TOTAL_FP+TOTAL_FN+TOTAL_TN)
+    TOTAL_PRECISION = TOTAL_TP/(TOTAL_TP+TOTAL_FP)
+    TOTAL_RECALL = TOTAL_TP/(TOTAL_TP+TOTAL_FN)
+    TOTAL_F1 = 2 * ((TOTAL_PRECISION * TOTAL_RECALL)/(TOTAL_PRECISION + TOTAL_RECALL)) 
+
+    stack = np.array((ACCURACY, PRECISION, RECALL, F1))
+    labels = ['precision', 'recall', 'f1', 'accuracy']
+    self.metrics = {
+        'blb'   :   {v:c for c,v in zip(stack[:, 0], labels)},
+        'hlt'   :   {v:c for c,v in zip(stack[:, 1], labels)},
+        'rb'    :   {v:c for c,v in zip(stack[:, 2], labels)},
+        'sb'    :   {v:c for c,v in zip(stack[:, 3], labels)},
+        'total'     : {
+            'precision' : TOTAL_PRECISION,
+            'recall'    : TOTAL_RECALL,
+            'f1'        : TOTAL_F1,
+            'accuracy'  : TOTAL_ACCURACY,
+        }
+    }
 
 def testPreProcess():
     test = 0

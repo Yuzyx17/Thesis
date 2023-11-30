@@ -1,5 +1,5 @@
 import joblib
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix, f1_score, precision_score, recall_score
 from lib.Processing import extractFeatures, segment
 from lib.WrapperACO import WrapperACO
 from lib.WrapperPSO import WrapperPSO
@@ -8,10 +8,12 @@ from const import *
 class Model():
     def __init__(self, model: ModelType, features=None, labels=None):
         self.model = model
-        self.classifier = None
         self.accuracy = 0.0
+        self.classifier = None
         self.report = None
         self.solution = None
+        self.confusion = None
+        self.metrics = None
         self.scaler = StandardScaler()
         self.encoder = LabelEncoder()
 
@@ -71,6 +73,64 @@ class Model():
         self.accuracy = accuracy_score(self.Y_test, Y_pred)
         self.classifier = svm
 
+    def obtainMetrics(self):
+        X_test = self.X_test[:, self.solution] if self.solution is not None else self.X_test
+
+        Y_pred = self.classifier.predict(X_test)
+        self.report = classification_report(self.Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)
+        self.accuracy = accuracy_score(self.Y_test, Y_pred)
+        self.confusion = confusion_matrix(self.Y_test, Y_pred, normalize='all')
+
+        FP = self.confusion.sum(axis=0) - np.diag(self.confusion)  
+        FN = self.confusion.sum(axis=1) - np.diag(self.confusion)
+        TP = np.diag(self.confusion)
+        TN = self.confusion.sum() - (FP + FN + TP)
+
+        # Overall accuracy
+        PRECISION = TP/(TP+FP)
+        RECALL = TP/(TP+FN)
+        F1 = 2 * (PRECISION * RECALL) / (PRECISION + RECALL)
+        ACCURACY = (TP+TN)/(TP+FP+FN+TN)
+
+        macro_precision = precision_score(self.Y_test, Y_pred, average='macro')
+        macro_recall = recall_score(self.Y_test, Y_pred, average='macro')
+        macro_f1 = f1_score(self.Y_test, Y_pred, average='macro')
+
+        micro_precision = precision_score(self.Y_test, Y_pred, average='micro')
+        micro_recall = recall_score(self.Y_test, Y_pred, average='micro')
+        micro_f1 = f1_score(self.Y_test, Y_pred, average='micro')
+
+        weighted_precision = precision_score(self.Y_test, Y_pred, average='weighted')
+        weighted_recall = recall_score(self.Y_test, Y_pred, average='weighted')
+        weighted_f1 = f1_score(self.Y_test, Y_pred, average='weighted')
+
+        stack = np.array((PRECISION, RECALL, F1, ACCURACY))
+        labels = ['precision', 'recall', 'f1', 'accuracy']
+        self.metrics = {
+            'blb'   :   {v:c for c,v in zip(stack[:, 0], labels)},
+            'hlt'   :   {v:c for c,v in zip(stack[:, 1], labels)},
+            'rb'    :   {v:c for c,v in zip(stack[:, 2], labels)},
+            'sb'    :   {v:c for c,v in zip(stack[:, 3], labels)},
+            'macro' :   {
+                'precision':    macro_precision,
+                'recall':       macro_recall,
+                'f1':           macro_f1,
+            },
+            'micro' :   {
+                'precision':    micro_precision,
+                'recall':       micro_recall,
+                'f1':           micro_f1,
+            },
+            'weighted': {
+                'precision':    weighted_precision,
+                'recall':       weighted_recall,
+                'f1':           weighted_f1,
+            },
+            'accuracy': self.accuracy
+        }
+
+        return self.metrics
+    
     def predict(self, image):
         image = cv2.imread(image) 
         image = segment(image)
