@@ -223,4 +223,9 @@ class Model():
             print(f"TP {tp}\nTN {tn}\nFN {fn}\nFP {fp}")
             print(f"Precision {precision}\nRecall {recall}\nF1-Score {f1}\nAccuracy {accuracy}\n")
 
+        report = classification_report(Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)
+        accuracy = accuracy_score(Y_test, Y_pred)
+
+        print(report)
+        print(accuracy)
         
