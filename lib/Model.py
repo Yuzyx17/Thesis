@@ -1,4 +1,7 @@
 import joblib
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sb
 from sklearn.metrics import classification_report, confusion_matrix, f1_score, precision_score, recall_score
 from lib.Processing import extractFeatures, segment
 from lib.WrapperABC import WrapperABC
@@ -39,14 +42,15 @@ class Model():
             self.solution = np.load(f"{FEATURE_PATH}/{self.model.name}.npy")
 
     def create(self):
+        print(f"Starting Training")
         match self.model:
             case ModelType.AntColony:
                 fitness_function = lambda subset: fitness_cv(self.X_train, self.Y_train, subset) if FOLDS > 1 else fitness(self.X_train, self.Y_train, subset)
                 fit_accuracy = fitness_function(np.arange(0, self.X_train.shape[1]))
                 aco = WrapperACO(fitness_function,
                                 self.X_train.shape[1], 
-                                ants=3, 
-                                iterations=3, 
+                                ants=20, 
+                                iterations=50, 
                                 rho=0.1, 
                                 Q=.75, 
                                 debug=1, 
@@ -79,12 +83,20 @@ class Model():
         self.accuracy = accuracy_score(self.Y_test, Y_pred)
         self.classifier = svm
 
+    def retestModel(self):
+        X_test = self.X_test[:, self.solution] if self.solution is not None else self.X_test
+
+        Y_pred = self.classifier.predict(X_test)
+        report = classification_report(self.Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)
+        accuracy = accuracy_score(self.Y_test, Y_pred)
+
+        print(f"{report} Accuracy: {accuracy}")
+
     def obtainMetrics(self, test=None):
         X_test, Y_test = test if test is not None else (self.X_test, self.Y_test)
         X_test = self.scaler.transform(X_test) if test is not None else Y_test
         X_test = X_test[:, self.solution] if self.solution is not None else X_test 
         Y_test = self.encoder.transform(Y_test) if test is not None else Y_test
-
 
         Y_pred = self.classifier.predict(X_test)
         report = classification_report(Y_test, Y_pred, target_names=self.encoder.classes_, zero_division='warn', output_dict=True)
@@ -158,3 +170,57 @@ class Model():
         predictions = {label:probability for (label, probability) in zip(self.encoder.classes_, prediction[0])}
         predictions['predicted'] = self.encoder.classes_[predicted[0]] 
         return predictions
+    
+    def obtainConfusion(self, test=None):
+        X_test, Y_test, N_test = test if test is not None else (self.X_test, self.Y_test)
+        X_test = self.scaler.transform(X_test) if test is not None else Y_test
+        X_test = X_test[:, self.solution] if self.solution is not None else X_test 
+        Y_test = self.encoder.transform(Y_test) if test is not None else Y_test
+        Y_pred = self.classifier.predict(X_test)
+        
+        print(f"Image\t\tPredicted\tActual")
+        for i in range(len(Y_pred)):
+            print(f"{N_test[i]}\t\t{self.encoder.classes_[Y_pred[i]]}\t\t{self.encoder.classes_[Y_test[i]]}")
+
+        confusion = confusion_matrix(Y_test, Y_pred)
+        norm_confusion = confusion_matrix(Y_test, Y_pred)
+        FP = norm_confusion.sum(axis=0) - np.diag(norm_confusion)  
+        FN = norm_confusion.sum(axis=1) - np.diag(norm_confusion)
+        TP = np.diag(norm_confusion)
+        TN = norm_confusion.sum() - (FP + FN + TP)
+
+        # Overall accuracy
+        PRECISION = TP/(TP+FP)
+        RECALL = TP/(TP+FN)
+        F1 = 2 * (PRECISION * RECALL) / (PRECISION + RECALL)
+        ACCURACY = (TP+TN)/(TP+FP+FN+TN)
+
+        data_frame = pd.DataFrame(confusion, index=['blb', 'hlt', 'sb', 'rb'], columns=['blb', 'hlt', 'sb', 'rb'])
+        plt.figure(figsize=(5, 4))
+        sb.heatmap(data_frame, annot=True)
+        plt.title('Confusion Matrix')
+        plt.ylabel('Actual')
+        plt.xlabel('Predicted')
+        plt.show()
+
+        confusion = confusion.reshape((4, 4))
+        print(confusion)
+        for i in range(len(confusion[0])):
+            print(self.encoder.classes_[i])
+            fn = 0
+            fp = 0
+            for j in range(len(confusion[i])):
+                if i != j:
+                    fn += confusion[i][j]
+                    fp += confusion[j][i]
+            tp = confusion[i][i]
+            tn = confusion.sum() - (confusion[i][i] + fn + fp)
+
+            precision = tp/(tp+fp)
+            recall = tp/(tp+fn)
+            f1 = 2 * ((precision*recall)/(precision+recall))
+            accuracy = (tp+tn)/(tp+fp+fn+tn)
+            print(f"TP {tp}\nTN {tn}\nFN {fn}\nFP {fp}")
+            print(f"Precision {precision}\nRecall {recall}\nF1-Score {f1}\nAccuracy {accuracy}\n")
+
+        

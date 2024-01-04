@@ -17,27 +17,32 @@ class WrapperABC():
         self.limit = limit
         self.iterations = iterations
 
+        # Divide bees into employed and onlooker
         self.bees = bees // 2
         self.solutions = np.zeros((self.bees, self.features))
 
+        # Generate initial solution for the bees
         for solution in range(len(self.solutions)):
             for feature in range(len(self.solutions[solution])):
                 self.solutions[solution, feature] = self.lb + (self.ub - self.lb) * np.random.rand()
 
+        # Generate the initial fitness for the bees
         self.fitnesses = np.zeros(self.bees)
         self.accuracy = 0.0
         self.solution = None
 
+        # Evaluate the fitness of each solution and assign the best solution as the best
         for bee in range(self.bees):
             self.fitnesses[bee] = self.fitness_function(np.where(self.solutions[bee,:] > self.threshold)[0])
             if self.fitnesses[bee] > self.accuracy:
                 self.accuracy = self.fitnesses[bee]
                 self.solution = self.solutions[bee]
         
+        # Generate initial limits and candidates for each bees
         self.limits = np.zeros(self.bees)
         self.candidates = np.zeros((self.bees, self.features))
 
-    # Get initial solutions
+    # Get initial solutions for the candidate bees
     def employedBee(self, bee):
         k = [x for x in range(0, bee)] + [x for x in range(bee + 1, self.bees)]
         k = k[np.random.randint(0, len(k))]
@@ -48,7 +53,7 @@ class WrapperABC():
         boundary = np.clip(boundary, self.lb, self.ub)
         self.candidates[bee,:] = boundary
 
-    # Greedy search of bees
+    # Greedy search of bees, Evaluate if the dance is accepted based on probability
     def onlookerBees(self, bee, probability):
         if np.random.rand() < probability[bee]:
             k = [x for x in range(0, bee)] + [x for x in range(bee + 1, self.bees)]
@@ -70,7 +75,7 @@ class WrapperABC():
             else:
                 self.limits[bee] += 1
 
-    # Scout if solution of a bee becomes stagnant
+    # Scout if a solution becomes stagnant or does not improve
     def scoutBees(self, bee):
         if self.limits[bee] >= self.limit:
             for feature in range(self.features):

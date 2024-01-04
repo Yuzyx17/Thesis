@@ -4,8 +4,8 @@ from lib.Model import Model
 from lib.Analysis import *
 import pprint
 
-image = r'dataset\finalized\validation\blb\40.jpg'
-
-model = Model(ModelType.BaseModel)
+X, Y = preLoadImages()
+model = Model(ModelType.AntColony, X, Y)
 model.load()
-pprint.pprint(model.predict(image))
+model.obtainConfusion(loadNamedUnseenImages()) 
+model.retestModel()

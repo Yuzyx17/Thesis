@@ -24,7 +24,7 @@ def loadImages(dataset_path=TRAINING_PATH):
     for class_folder in os.listdir(dataset_path):
         class_label = class_folder
         class_path = os.path.join(dataset_path, class_folder)
-
+        print(f"Class: {class_label}")
         for image_file in os.listdir(class_path):
             image_path = os.path.join(class_path, image_file)
             image = cv2.imread(image_path) 
@@ -69,7 +69,8 @@ def loadUnseenImages():
             image = cv2.imread(image_path) 
             seg_image = segment(image)
             seg_image = cv2.resize(seg_image, (WIDTH, HEIGHT))
-            
+            print(image_path)
+
             feature = extractFeatures(seg_image)
             features.append(feature)
             labels.append(class_label)
@@ -78,6 +79,33 @@ def loadUnseenImages():
     labels = np.array(labels)
 
     return features, labels
+
+def loadNamedUnseenImages():
+    features = []
+    labels = []
+    names = []
+    # Loop through the class folders
+    for class_folder in os.listdir(TESTING_PATH):
+        class_label = class_folder
+        class_path = os.path.join(TESTING_PATH, class_folder)
+
+        for image_file in os.listdir(class_path):
+            image_path = os.path.join(class_path, image_file)
+            image = cv2.imread(image_path) 
+            seg_image = segment(image)
+            seg_image = cv2.resize(seg_image, (WIDTH, HEIGHT))
+
+            feature = extractFeatures(seg_image)
+            names.append(image_file)
+            features.append(feature)
+            labels.append(class_label)
+    
+    features = np.array(features)
+    labels = np.array(labels)
+    names = np.array(names)
+    
+    return features, labels, names
+
 
 def extractFeatures(image):
     features = []
